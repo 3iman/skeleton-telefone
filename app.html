@@ -286,10 +286,9 @@ body { margin: 0; overflow: hidden; background: #fff; }
 }
 
 /* Gulsčia planšetė ir kompiuteris – be apvalkalo, desktopo svetainė */
-@media (min-width: 1025px) {
-  .hdr, .tabs, .info, .edge, .shade, .sheet, .install, .offline { display: none !important; }
-  .app { --tabh: 0px; }
-}
+/* Kompiuteris platesniame nei 1024 px lange – be apvalkalo. Planšetei (net gulsčiai) apvalkalas lieka. */
+.app.desk-wide .hdr, .app.desk-wide .tabs, .app.desk-wide .info, .app.desk-wide .edge, .app.desk-wide .shade, .app.desk-wide .sheet, .app.desk-wide .install, .app.desk-wide .offline { display: none !important; }
+.app.desk-wide { --tabh: 0px; }
 
 /* Kontrasto režimai apvalkalui – ta pati paletė kaip Skeleton (#373737 / #fff / #1c1c1c) */
 .app.c1 .hdr, .app.c1 .tabs, .app.c1 .sheet { background: #fff; color: #373737; border-color: #373737; }
@@ -406,6 +405,18 @@ body { margin: 0; overflow: hidden; background: #fff; }
 
   const $ = (id) => document.getElementById(id);
   const app = $('app'), hdr = $('hdr'), frame = $('site'), tabsEl = $('tabs');
+  // Įrenginio tipas: ?d=phone|tablet (demonstraciniuose rėmeliuose) arba aptinkamas pagal lietimą ir ekrano dydį
+  const DEVICE = (() => {
+    const q = (location.search.match(/[?&]d=(phone|tablet)/) || [])[1];
+    if (q) return q;
+    const coarse = window.matchMedia && matchMedia('(pointer: coarse)').matches;
+    const ipadOS = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+    if (!coarse && !ipadOS) return 'desktop';
+    return Math.min(screen.width, screen.height) >= 600 ? 'tablet' : 'phone';
+  })();
+  const deskWide = () => DEVICE === 'desktop' && innerWidth > 1024;
+  app.classList.add('dev-' + DEVICE);
+  app.classList.toggle('desk-wide', deskWide());
 
   // ---------- Kelių normalizavimas ----------
   function norm(href) {
@@ -681,8 +692,11 @@ body { margin: 0; overflow: hidden; background: #fff; }
   .breads li:last-child a{color:#333!important;font-weight:500}
   .breads li a{margin-right:6px!important}
   .breads li+li a{margin-left:5px!important}
+  /* Gulsčia planšetė: svetainės desktopo antraštė ir meniu paslepiami – juos atstoja apvalkalas */
+  .proto-tab-wide .header,.proto-tab-wide .bg-green,.proto-tab-wide .accessibility-holder{display:none!important}
+  .proto-tab-wide .footer-copyright-block{display:none!important}
   /* Planšetė: naujienos kortelėmis 2 stulpeliais, footeris atskleistas 2 stulpeliais */
-  @media (min-width:641px) and (max-width:1024px){
+  @media (min-width:641px){
     .news-list>ul{display:grid!important;grid-template-columns:1fr 1fr;gap:16px}
     .news-list .news-item,.news-flat-item{flex-direction:column!important;min-height:0;margin:0!important}
     .news-item>a:first-child,.news-flat-img-block{width:100%!important}
@@ -841,7 +855,8 @@ body { margin: 0; overflow: hidden; background: #fff; }
   }
   function decorate(doc) {
     // Gulsčia planšetė (>1024 px) – įprasta desktopo svetainė, apvalkalo pakeitimų netaikome
-    if ((doc.defaultView.innerWidth || 0) > 1024) { applyHero(doc); return; }
+    if (deskWide()) { applyHero(doc); return; }
+    if ((doc.defaultView.innerWidth || 0) > 1024) doc.body.classList.add('proto-tab-wide');
     if (!doc.getElementById('proto-css')) { const s = doc.createElement('style'); s.id = 'proto-css'; s.textContent = PROTO_CSS; doc.head.appendChild(s); }
     rebuildFooter(doc);
     rebuildLessons(doc);
@@ -1238,10 +1253,12 @@ body { margin: 0; overflow: hidden; background: #fff; }
     if (n.path) go(n.path);
   }
   // Pasukus planšetę ar pakeitus plotį: perskaičiuoti išdėstymą, o perėjus 1024 px ribą – perkrauti puslapį
-  let wideMode = innerWidth > 1024;
+  let wideMode = deskWide();
   window.addEventListener('resize', () => {
+    app.classList.toggle('desk-wide', deskWide());
+    try { if (!deskWide()) frame.contentDocument.body.classList.toggle('proto-tab-wide', innerWidth > 1024); } catch (e) {}
     layout();
-    const w = innerWidth > 1024;
+    const w = deskWide();
     if (w !== wideMode) { wideMode = w; go(state.path, { initial: true, back: true }); }
   });
   window.addEventListener('message', (e) => {

@@ -56,7 +56,8 @@ body { background: var(--bg); color: var(--fg); font-family: var(--font); }
     <div>Tikras skeleton.svetainesmokykloms.lt turinys su dabartiniu responsive išdėstymu. Pakeistas tik apvalkalas – telefonui ir planšetei.</div>
     <ul>
       <li>Telefonas: apatinė juosta, lapai iš apačios.</li>
-      <li>Planšetė: juosta su užrašais, lapai – šoninis skydelis, naujienos ir footeris 2 stulpeliais.</li>
+      <li>Planšetė (ir stačia, ir gulsčia): juosta su užrašais, lapai – šoninis skydelis, naujienos ir footeris 2 stulpeliais.</li>
+      <li>Kompiuteris – įprasta desktopo svetainė.</li>
     </ul>
     <div>Telefone ar planšetėje ši nuoroda iškart atidaro programėlę per visą ekraną.</div>
     <div class="label">Valdikliai abiem įrenginiams</div>
@@ -68,8 +69,8 @@ body { background: var(--bg); color: var(--fg); font-family: var(--font); }
     <button class="ctl" data-cmd="offline">Be ryšio <i data-st="offline">išjungta</i></button>
   </div>
   <div class="devices">
-    <div class="dev"><div class="frame phone" id="fPhone"><iframe src="app.html" title="Telefonas" id="iPhone"></iframe></div><span>Telefonas · 390 px</span></div>
-    <div class="dev"><div class="frame tablet" id="fTab"><iframe src="app.html" title="Planšetė" id="iTab"></iframe></div><span>Planšetė · <b id="tabLbl">820 px, stačia</b> · <button class="toggle-orient" id="orient">pasukti</button></span></div>
+    <div class="dev"><div class="frame phone" id="fPhone"><iframe src="app.html?d=phone" title="Telefonas" id="iPhone"></iframe></div><span>Telefonas · 390 px</span></div>
+    <div class="dev"><div class="frame tablet" id="fTab"><iframe src="app.html?d=tablet" title="Planšetė" id="iTab"></iframe></div><span>Planšetė · <b id="tabLbl">820 px, stačia</b> · <button class="toggle-orient" id="orient">pasukti</button></span></div>
   </div>
 </div>
 
