@@ -451,6 +451,7 @@ button { font-family: inherit; }
       if (opts.back) state.hist.pop(); else if (!opts.root) state.hist.push(state.path); else state.hist = [];
     }
     navDir = opts.back ? 'back' : 'fwd';
+    if (HIST && !opts.back && !opts.initial) { try { history.pushState({ sk: 1 }, ''); } catch (e) {} }
     state.path = p;
     renderHeader(); renderTabs();
     if (state.offline && !isSaved(p)) { showOffpage(p); return; }
@@ -459,6 +460,9 @@ button { font-family: inherit; }
     app.classList.add('loading');
     frame.srcdoc = buildDoc(p);
   }
+  // Naršyklės istorija naudojama tik kai svetainė atidaryta atskirai (ne claude.ai rėmelyje)
+  let HIST = false; try { HIST = window.top === window; } catch (e) {}
+  function navBack() { if (HIST && state.hist.length) history.back(); else goBack(); }
   function goBack() {
     const prev = state.hist[state.hist.length - 1];
     if (prev !== undefined) go(prev, { back: true });
@@ -477,7 +481,7 @@ button { font-family: inherit; }
     let sx = null, sy = 0, dx = 0;
     doc.addEventListener('touchstart', (e) => { const t = e.touches[0]; if (t.clientX < 24 && state.path !== '/') { sx = t.clientX; sy = t.clientY; dx = 0; frame.style.transition = 'none'; } }, { passive: true });
     doc.addEventListener('touchmove', (e) => { if (sx === null) return; const t = e.touches[0]; dx = Math.max(0, t.clientX - sx); if (Math.abs(t.clientY - sy) > 60 && dx < 20) { sx = null; frame.style.transform = ''; return; } frame.style.transform = 'translateX(' + dx + 'px)'; }, { passive: true });
-    doc.addEventListener('touchend', () => { if (sx === null) return; frame.style.transition = 'transform .2s ease'; if (dx > 90) { frame.style.transform = 'translateX(100%)'; setTimeout(() => { frame.style.transform = ''; frame.style.transition = ''; goBack(); }, 180); } else { frame.style.transform = ''; setTimeout(() => frame.style.transition = '', 220); } sx = null; });
+    doc.addEventListener('touchend', () => { if (sx === null) return; frame.style.transition = 'transform .2s ease'; if (dx > 90) { frame.style.transform = 'translateX(100%)'; setTimeout(() => { frame.style.transform = ''; frame.style.transition = ''; navBack(); }, 180); } else { frame.style.transform = ''; setTimeout(() => frame.style.transition = '', 220); } sx = null; });
     if (!state.installed && !state.installShown && state.navCount >= 3) setTimeout(showInstall, 900);
     doc.addEventListener('click', onFrameClick, true);
     doc.addEventListener('submit', (e) => {
@@ -1141,7 +1145,7 @@ button { font-family: inherit; }
     if (d.infogo) { go('/gimnazija/priemimas-i-gimnazija'); return; }
     if (d.infox) { setInfo(false); toast('Pranešimas paslėptas. Tikroje svetainėje jis neberodomas šiam lankytojui iki kito sezono.'); return; }
     if (d.alertgo) { go('/civiline-sauga'); return; }
-    if (d.back) { goBack(); return; }
+    if (d.back) { navBack(); return; }
     if (d.merole) { state.me = { role: d.merole }; saveMe(); refreshSheet(); return; }
     if (d.mecls) { state.me.cls = d.mecls; saveMe(); refreshSheet(); toast('Išsaugota: ' + d.mecls + ' klasė. Greičiau lape rodysime jūsų pakeitimus.'); return; }
     if (d.mereset) { state.me = null; saveMe(); refreshSheet(); return; }
@@ -1172,7 +1176,15 @@ button { font-family: inherit; }
   if (STANDALONE) { state.installed = true; state.installShown = true; }
   window.addEventListener('offline', () => setOffline(true));
   window.addEventListener('online', () => { if (state.offline) setOffline(false); });
-  go('/', { root: true });
+  // Sisteminis „atgal“ (Android gestas, naršyklės mygtukas): pirma uždaro lapą ar dokumentą, tada grįžta puslapiu
+  if (HIST) try { history.replaceState({ sk: 1 }, ''); } catch (e) {}
+  if (HIST) window.addEventListener('popstate', () => {
+    const keep = () => { try { history.pushState({ sk: 1 }, ''); } catch (e) {} };
+    if ($('viewer').classList.contains('on')) { closeViewer(); keep(); return; }
+    if (state.sheet) { closeSheet(); keep(); return; }
+    if (state.path !== '/' || state.hist.length) goBack();
+  });
+  go('/', { root: true, initial: true });
   // Pirmą kartą užrašas „Prieinamumas“ matomas, po kelių sekundžių susiskleidžia į ikoną
   setTimeout(() => {
     state.hint = false;
