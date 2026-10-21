@@ -760,6 +760,15 @@ body { margin: 0; overflow: hidden; background: #fff; }
   }
   /* Straipsnio pradžia telefone ir planšetėje */
   .proto-article .breads{display:none!important}
+  /* Vieno lygio kelias („Pradžia“) dubliuoja grįžimo mygtuką – nerodome */
+  .proto-crumb1 .breads{display:none!important}
+  /* Slinkties juosta – kaip telefone: neužima vietos */
+  html{scrollbar-width:none}
+  ::-webkit-scrollbar{display:none}
+  /* Prisegtos naujienos ženklas matomas ant bet kokios nuotraukos */
+  .news-flat-img-block .pinned{position:absolute;top:8px;left:8px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff!important;display:flex!important;align-items:center;justify-content:center;font-size:13px!important;margin:0!important}
+  .news-flat-img-block>a{position:relative}
+  @media (max-width:640px){.content-main-title a[href$="rss.xml"]{display:none!important}}
   .proto-article .content-main{padding-top:6px!important}
   .proto-eyebrow{display:flex;align-items:center;gap:8px;font-size:14px;color:#6b6b6b;margin:6px 0 6px;flex-wrap:wrap}
   .proto-eyebrow a{color:#2e7d32!important;font-weight:500;text-transform:uppercase;letter-spacing:.04em;font-size:13px}
@@ -1040,7 +1049,7 @@ body { margin: 0; overflow: hidden; background: #fff; }
       const cat = ul.querySelector('a');
       ul.innerHTML = (m ? '<li>' + m[0] + '</li>' : '') + (cat ? (m ? '<li aria-hidden="true">·</li>' : '') + '<li>' + cat.outerHTML + '</li>' : '');
     });
-    const bl = doc.querySelector('.breads ul'); if (bl) { const f = bl.querySelector('li a'); if (f && /Titulinis/.test(f.textContent)) f.textContent = 'Pradžia'; bl.scrollLeft = bl.scrollWidth; }
+    const bl = doc.querySelector('.breads ul'); doc.body.classList.toggle('proto-crumb1', !!bl && bl.querySelectorAll('li').length <= 1); if (bl) { const f = bl.querySelector('li a'); if (f && /Titulinis/.test(f.textContent)) f.textContent = 'Pradžia'; bl.scrollLeft = bl.scrollWidth; }
     // Naujienos straipsnis: dalintis, kalendorius
     if (/^\/naujienos\/[^/]+\/\d{4}\/\d{2}\//.test(state.path)) {
       const ab = doc.querySelector('.article-block');
