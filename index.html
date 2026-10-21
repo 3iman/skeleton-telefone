@@ -67,10 +67,13 @@ body { background: var(--bg); color: var(--fg); font-family: var(--font); }
     <button class="ctl" data-cmd="install">Rodyti diegimo pasiūlymą <i>›</i></button>
     <button class="ctl" data-cmd="push">Atsiųsti pranešimą <i>›</i></button>
     <button class="ctl" data-cmd="offline">Be ryšio <i data-st="offline">išjungta</i></button>
+    <div class="label">Autoriaus raktas</div>
+    <button class="ctl" data-cmd="keylock">Baigti sesiją (prašys PIN) <i>›</i></button>
+    <button class="ctl" data-cmd="keyreset">Pamiršti raktą <i>›</i></button>
   </div>
   <div class="devices">
-    <div class="dev"><div class="frame phone" id="fPhone"><iframe src="app.html?d=phone" title="Telefonas" id="iPhone"></iframe></div><span>Telefonas · 390 px</span></div>
-    <div class="dev"><div class="frame tablet" id="fTab"><iframe src="app.html?d=tablet" title="Planšetė" id="iTab"></iframe></div><span>Planšetė · <b id="tabLbl">820 px, stačia</b> · <button class="toggle-orient" id="orient">pasukti</button></span></div>
+    <div class="dev"><div class="frame phone" id="fPhone"><iframe allow="publickey-credentials-get *; publickey-credentials-create *" src="app.html?d=phone" title="Telefonas" id="iPhone"></iframe></div><span>Telefonas · 390 px</span></div>
+    <div class="dev"><div class="frame tablet" id="fTab"><iframe allow="publickey-credentials-get *; publickey-credentials-create *" src="app.html?d=tablet" title="Planšetė" id="iTab"></iframe></div><span>Planšetė · <b id="tabLbl">820 px, stačia</b> · <button class="toggle-orient" id="orient">pasukti</button></span></div>
   </div>
 </div>
 

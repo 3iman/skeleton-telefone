@@ -376,6 +376,77 @@ body { margin: 0; overflow: hidden; background: #fff; }
 .app.c2 .info-x { color: #fff; }
 .app.c2 #site { background: #373737; }
 .app.c2 .demo-toggle { background: #1c1c1c; color: #fff; border-color: #fff; }
+
+/* ---- Autoriaus raktas (įrenginys + PIN / biometrija) ---- */
+.auth { position: absolute; inset: 0; z-index: 60; background: #fff; display: flex; flex-direction: column; transform: translateY(100%); visibility: hidden; transition: transform .32s cubic-bezier(.2,.8,.2,1), visibility 0s .32s; }
+.auth.on { transform: none; visibility: visible; transition: transform .32s cubic-bezier(.2,.8,.2,1); }
+.auth-h { display: flex; align-items: center; justify-content: space-between; min-height: 56px; padding: env(safe-area-inset-top, 0px) 8px 0; flex-shrink: 0; }
+.auth-h button { width: 44px; height: 44px; border: 0; background: none; color: #333; font-size: 26px; line-height: 1; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.auth-h button[hidden] { visibility: hidden; display: flex; }
+.auth-b { flex: 1; min-height: 0; overflow-y: auto; padding: 4px 24px calc(24px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; align-items: center; }
+.auth-in { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 14px; flex: 1; }
+.auth-ic { width: 64px; height: 64px; border-radius: 50%; background: #e8f3e9; color: #2e7d32; display: flex; align-items: center; justify-content: center; align-self: center; margin-top: 8px; }
+.auth h2 { margin: 0; font-size: 22px; line-height: 1.25; text-align: center; color: #1d1d1d; text-wrap: balance; }
+.auth p { margin: 0; font-size: 15px; line-height: 1.5; color: #4a4f55; text-align: center; }
+.auth .who { font-size: 14px; color: #5f6368; text-align: center; }
+.auth label.fld { display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500; color: #333; margin-top: 6px; }
+.auth input[type=email] { height: 50px; padding: 0 14px; border: 1px solid #b9c0c7; font: inherit; font-size: 16px; color: #222; outline: 0; }
+.auth input[type=email]:focus { border-color: #2e7d32; box-shadow: 0 0 0 1px #2e7d32; }
+.auth .err { color: #c62828; font-size: 13px; font-weight: 500; }
+.auth .hint { font-size: 13px; color: #6b7076; line-height: 1.45; text-align: center; }
+.auth .btn { min-height: 50px; border: 0; background: #2e7d32; color: #fff; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer; width: 100%; }
+.auth .btn.ghost { background: #fff; color: #2e7d32; border: 1px solid #2e7d32; }
+.auth .link { border: 0; background: none; color: #2e7d32; font: inherit; font-size: 15px; text-decoration: underline; cursor: pointer; padding: 8px; align-self: center; }
+.auth .spacer { flex: 1; }
+.auth .aopt { display: flex; align-items: center; gap: 14px; width: 100%; padding: 14px; border: 1px solid #d5dade; background: #fff; text-align: left; font: inherit; color: #222; cursor: pointer; }
+.auth .aopt:active { background: #f3f5f6; }
+.auth .aopt svg { color: #2e7d32; flex-shrink: 0; }
+.auth .aopt b { display: block; font-size: 16px; }
+.auth .aopt small { display: block; font-size: 13px; color: #5f6368; margin-top: 2px; }
+.auth .aopt .tag { margin-left: auto; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; color: #2e7d32; background: #e8f3e9; padding: 3px 6px; align-self: flex-start; }
+.auth .mail { border: 1px solid #e3e4e6; background: #fafbfb; padding: 14px; display: flex; flex-direction: column; gap: 8px; text-align: left; }
+.auth .mail .from { font-size: 12px; color: #6b7076; }
+.auth .mail b { font-size: 15px; }
+.auth .mail p { text-align: left; font-size: 14px; }
+.auth .mail .btn { min-height: 44px; font-size: 15px; }
+.auth .demo { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: #8a6d00; background: #fff6d6; padding: 2px 6px; align-self: flex-start; }
+.auth .warn { background: #fdecea; color: #8e1c1c; padding: 10px 12px; font-size: 14px; line-height: 1.45; text-align: left; }
+/* PIN */
+.pin-dots { display: flex; gap: 16px; justify-content: center; margin: 10px 0 2px; }
+.pin-dots i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #9aa2a9; }
+.pin-dots i.on { background: #2e7d32; border-color: #2e7d32; }
+.pin-dots.shake { animation: pinShake .4s; }
+.pin-dots.ok i { background: #2e7d32; border-color: #2e7d32; transform: scale(1.15); transition: transform .15s; }
+@keyframes pinShake { 20%, 60% { transform: translateX(-9px); } 40%, 80% { transform: translateX(9px); } }
+.pin-msg { min-height: 20px; font-size: 14px; text-align: center; color: #c62828; font-weight: 500; }
+.pin-pad { display: grid; grid-template-columns: repeat(3, 72px); gap: 14px 22px; justify-content: center; margin-top: auto; padding-top: 10px; }
+.pin-pad button { width: 72px; height: 72px; border-radius: 50%; border: 0; background: #f1f3f5; color: #1d1d1d; font: inherit; font-size: 28px; font-weight: 400; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.pin-pad button:active { background: #dfe3e7; }
+.pin-pad button.fn { background: none; font-size: 15px; color: #2e7d32; }
+.pin-pad button.fn svg { color: #2e7d32; }
+.pin-pad button[disabled] { visibility: hidden; }
+/* Biometrija (imitacija, kai tikra nepasiekiama) */
+.bio { display: flex; flex-direction: column; align-items: center; gap: 14px; margin: auto 0; }
+.bio-ring { width: 96px; height: 96px; border-radius: 50%; border: 2px solid #cfd6dc; display: flex; align-items: center; justify-content: center; color: #2e7d32; }
+.bio-ring.scan { animation: bioScan 1.1s ease-in-out infinite; }
+.bio-ring.ok { border-color: #2e7d32; background: #e8f3e9; animation: none; }
+@keyframes bioScan { 50% { box-shadow: 0 0 0 10px rgba(46,125,50,.12); border-color: #2e7d32; } }
+.auth .check { width: 72px; height: 72px; align-self: center; margin-top: 8px; }
+.auth .check circle { fill: none; stroke: #2e7d32; stroke-width: 3; stroke-dasharray: 151; stroke-dashoffset: 151; animation: pdDraw2 .5s ease-out forwards; }
+.auth .check path { fill: none; stroke: #2e7d32; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 36; stroke-dashoffset: 36; animation: pdDraw2 .35s .45s ease-out forwards; }
+@keyframes pdDraw2 { to { stroke-dashoffset: 0; } }
+.keyrow { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid #e3e4e6; background: #fafbfb; font-size: 14px; text-align: left; }
+.keyrow svg { color: #2e7d32; flex-shrink: 0; }
+.keyrow small { display: block; color: #6b7076; font-size: 12px; }
+.staff-key { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; color: #5f6368; padding: 2px 0 0; }
+.staff-key button { border: 0; background: none; color: #2e7d32; font: inherit; font-size: 13px; text-decoration: underline; cursor: pointer; padding: 6px 0; }
+@media (prefers-reduced-motion: reduce) { .pin-dots.shake, .bio-ring.scan, .auth .check circle, .auth .check path { animation: none !important; stroke-dashoffset: 0; } }
+.app.c2 .auth, .app.c2 .auth .aopt, .app.c2 .auth .mail, .app.c2 .keyrow { background: #373737; color: #fff; border-color: #fff; }
+.app.c2 .auth h2, .app.c2 .auth p, .app.c2 .auth .who, .app.c2 .auth .hint, .app.c2 .auth label.fld, .app.c2 .auth .aopt small { color: #fff; }
+.app.c2 .auth input[type=email] { background: #1c1c1c; color: #fff; border-color: #fff; }
+.app.c2 .pin-pad button { background: #1c1c1c; color: #fff; }
+.app.c2 .auth .btn { background: #fff; color: #373737; }
+.app.c2 .auth-h button { color: #fff; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 
@@ -399,6 +470,7 @@ body { margin: 0; overflow: hidden; background: #fff; }
       <div class="toast" id="toast" role="status" aria-live="polite"></div>
       <div class="offline" id="offline"><svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M2 2l20 20M8.5 16.5a5 5 0 017 0M5 12.9a10 10 0 015.2-2.8M19 12.9a10 10 0 00-2.4-1.7M2 8.8a15 15 0 014.2-2.6M22 8.8A15 15 0 0011 5.1M12 20h.01"/></svg>Be ryšio · rodoma išsaugota versija</div>
       <section class="install" id="install" aria-label="Įdiegti svetainę"></section>
+      <section class="auth" id="auth" role="dialog" aria-modal="true" aria-labelledby="authTitle"><div class="auth-h"><button id="authBack" aria-label="Atgal" hidden>‹</button><button id="authClose" aria-label="Uždaryti">×</button></div><div class="auth-b" id="authBody"></div></section>
       <section class="viewer" id="viewer" role="dialog" aria-modal="true" aria-label="Dokumento peržiūra"></section>
       <button class="notif" id="notif" data-notifgo="1"></button>
       <div class="splash" id="splash"><img src="data:image/png;base64,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" alt=""><b>Prezidento Jono<br>Žemaičio gimnazija</b></div>
@@ -514,6 +586,211 @@ body { margin: 0; overflow: hidden; background: #fff; }
   const OFFLINE_SAVED = ['/', '/kontaktai', '/tvarkarasciai', '/tvarkarasciai/pamoku-tvarkarastis-2024-2025-m-m', '/tvarkarasciai/tvarkarasciu-pakeitimai', '/civiline-sauga', '/paslaugos/pagalba-mokiniams-ir-tevams/psichologines-ir-emocines-pagalbos-kontaktai', '/naujienos'];
   const isSaved = (p) => OFFLINE_SAVED.includes(p) || state.visited.has(p);
   let navDir = 'fwd';
+
+  // ---------- Autoriaus raktas: kvietimas -> įrenginys tampa raktu -> PIN arba biometrija ----------
+  const AUTH = (function () {
+    const LS = 'sk-author-key';
+    const SCHOOL_DOMAIN = 'raseiniugimnazija.lt';   // demo: darbuotojų sąrašas = šio domeno adresai
+    const SESSION_MIN = 15, MAX_FAILS = 5;
+    let KEY = null; try { KEY = JSON.parse(localStorage.getItem(LS) || 'null'); } catch (e) {}
+    let until = 0, cont = null, hist = [], ctx = {};
+    const save = () => { try { if (KEY) localStorage.setItem(LS, JSON.stringify(KEY)); else localStorage.removeItem(LS); } catch (e) {} };
+    const body = () => $('authBody');
+    const ic = {
+      key: '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="M10.8 12.2L19 4M16 7l3 3M14 9l2 2"/></svg>',
+      mail: '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h18v14H3zM3 6l9 7 9-7"/></svg>',
+      fp: '<svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 11v3a8 8 0 01-1 4M8.5 9.5A4 4 0 0116 12v1a12 12 0 01-.6 3.8M5.5 13a7 7 0 01-.1-1A6.6 6.6 0 0118.5 10M7.5 20a12 12 0 001.7-5.5V12a2.8 2.8 0 015.6 0M3.6 8.5A9 9 0 0120.5 9M18.6 20c.5-1.3.9-3 .9-5"/></svg>',
+      pin: '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 12h.01M11 12h.01M15 12h.01"/></svg>',
+      lock: '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>',
+      phone: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>',
+      del: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 5H9l-6 7 6 7h12zM13 10l4 4M17 10l-4 4"/></svg>'
+    };
+    const nameFrom = (em) => (em.split('@')[0] || '').split(/[._-]+/).filter(Boolean).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ') || 'Vardenis Pavardenis';
+    const mask = (em) => { const [u, d] = em.split('@'); return (u.length > 2 ? u[0] + '•••' + u.slice(-1) : u[0] + '•') + '@' + d; };
+    const device = () => { const ua = navigator.userAgent; return /iPhone/.test(ua) ? 'iPhone' : /iPad/.test(ua) ? 'iPad' : /Android/.test(ua) ? (/Mobile/.test(ua) ? 'Android telefonas' : 'Android planšetė') : /Mac/.test(ua) ? 'Mac kompiuteris' : /Windows/.test(ua) ? 'Windows kompiuteris' : 'Šis įrenginys'; };
+    const h = async (s) => { try { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('sk:' + s)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); } catch (e) { return 'p' + s; } };
+    const b64 = (buf) => btoa(String.fromCharCode(...new Uint8Array(buf)));
+    const unb64 = (s) => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+
+    function show(screen, push) {
+      if (push !== false && ctx.screen && ctx.screen !== screen) hist.push(ctx.screen);
+      ctx.screen = screen;
+      $('authBack').hidden = !hist.length || ['done', 'locked', 'unlockPin', 'unlockBio'].includes(screen);
+      body().innerHTML = '<div class="auth-in">' + SCREENS[screen]() + '</div>';
+      body().scrollTop = 0;
+      const f = body().querySelector('[autofocus]'); if (f) setTimeout(() => f.focus(), 340);
+      const h2 = body().querySelector('h2'); if (h2) h2.id = 'authTitle';
+      if (AFTER[screen]) AFTER[screen]();
+    }
+    const pinUI = (title, sub) => `<div class="auth-ic">${ic.lock}</div><h2>${title}</h2>${sub ? `<div class="who">${sub}</div>` : ''}
+      <div class="pin-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div class="pin-msg" role="alert"></div>
+      <div class="pin-pad">${[1,2,3,4,5,6,7,8,9].map(n => `<button data-pin="${n}">${n}</button>`).join('')}
+        <button class="fn" data-pinfn="alt" ${ctx.altLabel ? '' : 'disabled'}>${ctx.altLabel || ''}</button><button data-pin="0">0</button><button class="fn" data-pinfn="del" aria-label="Ištrinti">${ic.del}</button></div>`;
+
+    const SCREENS = {
+      intro: () => `${KEY && KEY.locked ? `<div class="warn">Raktas šiame telefone išjungtas po ${MAX_FAILS} neteisingų PIN bandymų. Gaukite naują kvietimą – užtruks minutę.</div>` : ''}
+        <div class="auth-ic">${ic.key}</div>
+        <h2>Naujienas kelia mokyklos darbuotojai</h2>
+        <p>Vieną kartą užregistruokite šį telefoną – jis taps jūsų raktu. Kitą kartą užteks PIN kodo ar piršto atspaudo.</p>
+        <label class="fld">Darbo el. paštas<input type="email" id="authEmail" inputmode="email" autocomplete="email" enterkeyhint="send" placeholder="vardas.pavarde@${SCHOOL_DOMAIN}" value="${esc(ctx.email || '')}" autofocus></label>
+        <div class="err" id="authErr" role="alert"></div>
+        <button class="btn" data-auth="send">Gauti kvietimą</button>
+        <div class="hint">Kvietimą siunčiame tik adresams iš mokyklos darbuotojų sąrašo.<br><span class="demo" style="display:inline-block;margin-top:6px">Demo</span> tinka bet kuris @${SCHOOL_DOMAIN} adresas</div>
+        <div class="spacer"></div>
+        <div class="hint">Nesate mokyklos darbuotojas? Informaciją publikuoti siųskite mokyklos el. paštu.</div>`,
+      sent: () => `<div class="auth-ic">${ic.mail}</div>
+        <h2>Kvietimas išsiųstas</h2>
+        <p>Atidarykite laišką, kurį išsiuntėme adresu <b>${esc(mask(ctx.email))}</b>, ir paspauskite nuorodą <b>šiame telefone</b>.</p>
+        <span class="demo">Demo · taip atrodo laiškas</span>
+        <div class="mail"><span class="from">Nuo: Prezidento Jono Žemaičio gimnazijos svetainė</span><b>Kvietimas kelti naujienas</b>
+          <p>Sveiki, ${esc(nameFrom(ctx.email))}. Paspauskite mygtuką telefone ar kompiuteryje, iš kurio kelsite naujienas. Nuoroda galioja 24 val. ir tik vieną kartą.</p>
+          <button class="btn" data-auth="openinvite">Užregistruoti įrenginį</button></div>
+        <div class="spacer"></div>
+        <button class="link" data-auth="resend">Laiško negavau – siųsti dar kartą</button>`,
+      notlisted: () => `<div class="auth-ic" style="background:#fdecea;color:#c62828">${ic.mail}</div>
+        <h2>Šio adreso darbuotojų sąraše nėra</h2>
+        <p><b>${esc(ctx.email)}</b> nerastas tarp mokyklos darbuotojų. Darbuotojų sąrašą tvarko mokyklos svetainės administratorius.</p>
+        <button class="btn ghost" data-auth="back">Bandyti kitą adresą</button>
+        <div class="hint">Naujas darbuotojas? Paprašykite administratoriaus įtraukti jus į sąrašą – kvietimą gausite automatiškai.</div>`,
+      invite: () => `<div class="auth-ic">${ic.phone.replace(/22/g, '30')}</div>
+        <h2>Sveiki, ${esc(nameFrom(ctx.email))}</h2>
+        <p>Šis ${esc(device().toLowerCase().startsWith('šis') ? 'įrenginys' : device())} taps jūsų raktu naujienoms kelti. Pasirinkite, kaip jį atrakinsite:</p>
+        <button class="aopt" data-auth="bio">${ic.fp.replace(/44/g, '30')}<span><b>Piršto atspaudas ar veidas</b><small>Kaip atrakinate telefoną</small></span><span class="tag">Patogiausia</span></button>
+        <button class="aopt" data-auth="pinnew">${ic.pin}<span><b>Savo PIN kodas</b><small>4 skaitmenys, žinosite tik jūs</small></span></button>
+        <div class="spacer"></div>
+        <div class="hint">Kitame telefone ar kompiuteryje reikės atskiro kvietimo.</div>`,
+      bioEnroll: () => `<div class="bio"><div class="bio-ring scan" id="bioRing">${ic.fp}</div><h2>Patvirtinkite piršto atspaudu ar veidu</h2><p id="bioTxt">Telefonas paprašys patvirtinti.</p></div>
+        <button class="link" data-auth="pinnew">Naudoti PIN kodą</button>`,
+      pinNew: () => pinUI('Sukurkite PIN kodą', '4 skaitmenys'),
+      pinRepeat: () => pinUI('Pakartokite PIN kodą', ''),
+      done: () => `<svg class="check" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24"/><path d="M15 27l7 7 15-16"/></svg>
+        <h2>Raktas paruoštas</h2>
+        <p>Kitą kartą naujieną kelsite ${KEY.method === 'pin' ? 'įvedę savo PIN kodą' : 'patvirtinę piršto atspaudu ar veidu'}.</p>
+        <div class="keyrow">${ic.phone}<span>${esc(KEY.device)}<small>${esc(KEY.name)} · ${esc(KEY.email)}</small></span></div>
+        <div class="spacer"></div>
+        <button class="btn" data-auth="continue" autofocus>Kurti naujieną</button>`,
+      unlockPin: () => pinUI('Įveskite PIN kodą', esc(KEY.name)),
+      unlockBio: () => `<div class="bio"><div class="bio-ring scan" id="bioRing">${ic.fp}</div><h2>Atrakinkite</h2><div class="who">${esc(KEY.name)}</div><p id="bioTxt">Patvirtinkite piršto atspaudu ar veidu.</p></div>
+        <button class="btn ghost" data-auth="biotry">Bandyti dar kartą</button><button class="link" data-auth="forgot">Nepavyksta? Gauti naują kvietimą</button>`,
+      locked: () => `<div class="auth-ic" style="background:#fdecea;color:#c62828">${ic.lock}</div>
+        <h2>Raktas užrakintas</h2>
+        <p>PIN kodas įvestas neteisingai ${MAX_FAILS} kartus, todėl dėl saugumo raktas šiame telefone išjungtas.</p>
+        <div class="spacer"></div>
+        <button class="btn" data-auth="forgot">Gauti naują kvietimą</button>`
+    };
+    const AFTER = {
+      intro: () => { const i = $('authEmail'); i && i.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); act('send'); } }); },
+      pinNew: () => { ctx.pin = ''; ctx.mode = 'new'; },
+      pinRepeat: () => { ctx.pin = ''; ctx.mode = 'repeat'; },
+      unlockPin: () => { ctx.pin = ''; ctx.mode = 'unlock'; const r = MAX_FAILS - (KEY.fails || 0); if (KEY.fails) pinMsg('Liko bandymų: ' + r); },
+      bioEnroll: () => bioEnroll(),
+      unlockBio: () => bioUnlock()
+    };
+    // ----- PIN -----
+    const dots = () => body().querySelector('.pin-dots');
+    const pinMsg = (t) => { const m = body().querySelector('.pin-msg'); if (m) m.textContent = t || ''; };
+    const paint = () => { const d = dots(); if (d) [...d.children].forEach((x, i) => x.classList.toggle('on', i < ctx.pin.length)); };
+    const shake = (msg) => { const d = dots(); pinMsg(msg); if (d) { d.classList.remove('shake'); void d.offsetWidth; d.classList.add('shake'); } try { navigator.vibrate && navigator.vibrate([40, 40, 40]); } catch (e) {} setTimeout(() => { ctx.pin = ''; paint(); }, 380); };
+    const WEAK = ['0000', '1111', '2222', '3333', '4444', '5555', '6666', '7777', '8888', '9999', '1234', '4321', '1212', '0123', '2580'];
+    async function pinDone() {
+      const p = ctx.pin;
+      if (ctx.mode === 'new') {
+        if (WEAK.includes(p)) { shake('Per lengvai atspėjamas. Pasirinkite kitą.'); return; }
+        ctx.first = p; setTimeout(() => show('pinRepeat'), 160); return;
+      }
+      if (ctx.mode === 'repeat') {
+        if (p !== ctx.first) { shake('PIN kodai nesutampa'); setTimeout(() => { hist.pop(); show('pinNew', false); pinMsg('PIN kodai nesutampa. Sukurkite iš naujo.'); }, 700); return; }
+        await enroll('pin', { pinHash: await h(p) }); return;
+      }
+      if (ctx.mode === 'unlock') {
+        if ((await h(p)) === KEY.pinHash) { KEY.fails = 0; save(); dots().classList.add('ok'); setTimeout(unlocked, 260); return; }
+        KEY.fails = (KEY.fails || 0) + 1;
+        if (KEY.fails >= MAX_FAILS) { KEY.locked = true; save(); shake('Neteisingas PIN'); setTimeout(() => { hist = []; show('locked', false); }, 600); return; }
+        save(); shake('Neteisingas PIN. Liko bandymų: ' + (MAX_FAILS - KEY.fails));
+      }
+    }
+    function pinKey(k) {
+      if (!['new', 'repeat', 'unlock'].includes(ctx.mode) || !dots()) return;
+      if (k === 'del') { ctx.pin = ctx.pin.slice(0, -1); paint(); return; }
+      if (ctx.pin.length >= 4) return;
+      ctx.pin += k; paint(); if (ctx.pin.length === 4) pinDone();
+    }
+    // ----- Biometrija: tikras passkey (WebAuthn), jei naršyklė leidžia; kitaip – imitacija -----
+    const simBio = (ok) => { const r = $('bioRing'), t = $('bioTxt'); if (t) t.textContent = 'Demo: imituojamas patvirtinimas…'; setTimeout(() => { if (r) { r.classList.remove('scan'); r.classList.add('ok'); } setTimeout(ok, 450); }, 1200); };
+    async function bioEnroll() {
+      const okDone = (cred) => enroll('bio', { credId: cred || '' });
+      try {
+        if (!window.PublicKeyCredential || !(await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable())) throw 0;
+        const c = await navigator.credentials.create({ publicKey: { challenge: crypto.getRandomValues(new Uint8Array(32)), rp: { name: 'Mokyklos svetainė' }, user: { id: crypto.getRandomValues(new Uint8Array(16)), name: ctx.email, displayName: nameFrom(ctx.email) }, pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }], authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required', residentKey: 'preferred' }, timeout: 60000 } });
+        const r = $('bioRing'); if (r) { r.classList.remove('scan'); r.classList.add('ok'); }
+        setTimeout(() => okDone(b64(c.rawId)), 350);
+      } catch (e) {
+        if (e && e.name === 'NotAllowedError' && window.top === window) { const t = $('bioTxt'); if (t) t.textContent = 'Patvirtinimas atšauktas. Bandykite dar kartą arba naudokite PIN kodą.'; const r = $('bioRing'); r && r.classList.remove('scan'); return; }
+        simBio(() => okDone(''));
+      }
+    }
+    async function bioUnlock() {
+      try {
+        if (!KEY.credId || !window.PublicKeyCredential) throw 0;
+        await navigator.credentials.get({ publicKey: { challenge: crypto.getRandomValues(new Uint8Array(32)), allowCredentials: [{ type: 'public-key', id: unb64(KEY.credId) }], userVerification: 'required', timeout: 60000 } });
+        const r = $('bioRing'); if (r) { r.classList.remove('scan'); r.classList.add('ok'); }
+        setTimeout(unlocked, 300);
+      } catch (e) {
+        if (KEY.credId && e && e.name === 'NotAllowedError') { const t = $('bioTxt'); if (t) t.textContent = 'Nepavyko patvirtinti. Bandykite dar kartą.'; const r = $('bioRing'); r && r.classList.remove('scan'); return; }
+        simBio(unlocked);
+      }
+    }
+    async function enroll(method, extra) {
+      KEY = Object.assign({ name: nameFrom(ctx.email), email: ctx.email, method, device: device(), created: Date.now(), fails: 0, locked: false }, extra);
+      save(); until = Date.now() + SESSION_MIN * 60000; hist = []; show('done', false);
+      try { navigator.vibrate && navigator.vibrate(25); } catch (e) {}
+    }
+    function unlocked() { until = Date.now() + SESSION_MIN * 60000; close(); const c = cont; cont = null; if (c) setTimeout(c, 120); }
+    function act(a) {
+      if (a === 'send') {
+        const v = ($('authEmail').value || '').trim().toLowerCase(); const err = $('authErr');
+        if (!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/.test(v)) { err.textContent = 'Įrašykite el. pašto adresą, pvz., vardas.pavarde@' + SCHOOL_DOMAIN; $('authEmail').focus(); return; }
+        ctx.email = v; show(v.endsWith('@' + SCHOOL_DOMAIN) ? 'sent' : 'notlisted'); return;
+      }
+      if (a === 'back') { if (hist.length) show(hist.pop(), false); return; }
+      if (a === 'resend') { toast('Kvietimas išsiųstas dar kartą'); return; }
+      if (a === 'openinvite') { if (KEY) { KEY = null; save(); } show('invite'); return; }
+      if (a === 'bio') { show('bioEnroll'); return; }
+      if (a === 'pinnew') { ctx.altLabel = ''; show('pinNew'); return; }
+      if (a === 'continue') { unlocked(); return; }
+      if (a === 'biotry') { show('unlockBio', false); return; }
+      if (a === 'forgot') { ctx.email = KEY ? KEY.email : ctx.email; hist = []; show('intro', false); return; }
+    }
+    function open(c) {
+      cont = c || null; hist = []; ctx = { email: KEY ? KEY.email : '' };
+      $('auth').classList.add('on');
+      if (!KEY || KEY.locked) show('intro', false);
+      else if (KEY.method === 'pin') { ctx.altLabel = 'Pamiršau'; show('unlockPin', false); }
+      else show('unlockBio', false);
+    }
+    function close() { $('auth').classList.remove('on'); ctx.mode = ''; }
+    $('authClose').addEventListener('click', () => { cont = null; close(); });
+    $('authBack').addEventListener('click', () => act('back'));
+    $('auth').addEventListener('click', (e) => {
+      const b = e.target.closest('button'); if (!b) return;
+      if (b.dataset.pin !== undefined) { pinKey(b.dataset.pin); return; }
+      if (b.dataset.pinfn === 'del') { pinKey('del'); return; }
+      if (b.dataset.pinfn === 'alt') { act('forgot'); return; }
+      if (b.dataset.auth) act(b.dataset.auth);
+    });
+    document.addEventListener('keydown', (e) => {
+      if (!$('auth').classList.contains('on') || !dots()) return;
+      if (/^[0-9]$/.test(e.key)) pinKey(e.key); else if (e.key === 'Backspace') pinKey('del');
+    });
+    return {
+      ok: () => !!KEY && !KEY.locked && Date.now() < until,
+      key: () => (KEY && !KEY.locked ? KEY : null),
+      open,
+      forget: () => { KEY = null; until = 0; save(); },
+      lockNow: () => { until = 0; }
+    };
+  })();
+
   // ---------- Skeleton ekranai: pagal puslapio tipą ----------
   function skelFor(p) {
     const L = (w, h) => `<i style="height:${h || 12}px;width:${w || 100}%"></i>`;
@@ -528,6 +805,7 @@ body { margin: 0; overflow: hidden; background: #fff; }
   let skelT = 0, skelTimer = 0;
   function go(p, opts) {
     opts = opts || {};
+    if (p === '/naujienos/kurti' && !AUTH.ok()) { closeSheet(true); AUTH.open(() => go(p, opts)); return; }
     if (!D.pages[p]) { toast('Šio puslapio prototipe nėra. Tikroje svetainėje jis atsidarytų.'); return; }
     closeSheet(true); closeViewer();
     if (p !== state.path) {
@@ -1579,7 +1857,8 @@ body { margin: 0; overflow: hidden; background: #fff; }
         <button class="qitem" data-href="${O}/dazniausiai-uzduodami-klausimai">${svg('M12 3a9 9 0 100 18 9 9 0 000-18zM9.5 9.5a2.5 2.5 0 114 2c-1 .6-1.5 1.2-1.5 2.5M12 17h.01')}DUK</button>
       </div>
       <div class="blacknav">${NAV.side.map(([t, h, ic]) => `<button data-href="${esc(h)}">${svg(sideIcon[ic] || I.doc, 20, 1.6)}${esc(t)}</button>`).join('')}</div>
-      ${state.me && state.me.role === 'mokytojas' ? '' : `<div class="staff"><span>Darbuotojams</span><button data-href="${O}/naujienos/kurti">${svg('M12 8v8M8 12h8M4 4h16v16H4z', 18, 1.8)}Įkelti naujieną</button></div>`}`;
+      ${state.me && state.me.role === 'mokytojas' ? '' : `<div class="staff"><span>Darbuotojams</span><button data-href="${O}/naujienos/kurti">${svg('M12 8v8M8 12h8M4 4h16v16H4z', 18, 1.8)}Įkelti naujieną</button></div>`}
+      ${AUTH.key() ? `<div class="staff-key"><span>Raktas šiame telefone · ${esc(AUTH.key().name)}</span><button data-keyforget="1">Pašalinti</button></div>` : ''}`;
   }
   const CLASSES = ['Ia', 'Ib', 'Ic', 'Id', 'IIa', 'IIb', 'IIc', 'IId', 'IIIa', 'IIIb', 'IIIc', 'IIId', 'IVa', 'IVb', 'IVc', 'IVd'];
   const ROLES = { tevai: 'Tėvai', mokinys: 'Mokinys', mokytojas: 'Mokytojas' };
@@ -1909,6 +2188,8 @@ body { margin: 0; overflow: hidden; background: #fff; }
     if (c === 'alert') setAlert(!state.alert);
     if (c === 'info') setInfo(!state.info);
     if (c === 'footer') toggleFooter();
+    if (c === 'keyreset') { AUTH.forget(); toast('Raktas pamirštas. „Įkelti naujieną“ vėl paprašys kvietimo.'); refreshSheet(); }
+    if (c === 'keylock') { AUTH.lockNow(); toast('Sesija baigta – kitą kartą bus prašoma PIN ar atspaudo.'); }
   });
   app.addEventListener('click', (e) => {
     const t = e.target.closest('button');
@@ -1921,6 +2202,7 @@ body { margin: 0; overflow: hidden; background: #fff; }
       return;
     }
     if (d.sheet) { openSheet(d.sheet); return; }
+    if (d.keyforget) { AUTH.forget(); toast('Raktas pašalintas iš šio telefono'); refreshSheet(); return; }
     if (d.go) { go(d.go); return; }
     if (d.href) { goHref(d.href); return; }
     if (d.alerttoggle) { setAlert(!state.alert); return; }
