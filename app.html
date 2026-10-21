@@ -683,6 +683,17 @@ body { margin: 0; overflow: hidden; background: #fff; }
   .light .pf-cp-b{display:block}
   .acc-contrast-2-activated .light .pf-cp-b{display:none}
   .acc-contrast-2-activated .light .pf-cp-w{display:block}
+  /* Straipsnio pradžia telefone ir planšetėje */
+  .proto-article .breads{display:none!important}
+  .proto-article .content-main{padding-top:6px!important}
+  .proto-eyebrow{display:flex;align-items:center;gap:8px;font-size:14px;color:#6b6b6b;margin:6px 0 6px;flex-wrap:wrap}
+  .proto-eyebrow a{color:#2e7d32!important;font-weight:500;text-transform:uppercase;letter-spacing:.04em;font-size:13px}
+  .proto-article .article-block h1{font-size:26px!important;line-height:1.2!important;margin:0 0 14px!important;padding-right:0!important}
+  .proto-article #page-font-size{display:none!important}
+  .proto-article .article-block{padding-bottom:0!important;margin-bottom:0!important}
+  @media (min-width:641px){.proto-article .article-block h1{font-size:32px!important}}
+  .acc-contrast-1-activated .proto-eyebrow a,.acc-contrast-1-activated .proto-eyebrow{color:#373737!important}
+  .acc-contrast-2-activated .proto-eyebrow a,.acc-contrast-2-activated .proto-eyebrow{color:#fff!important}
   /* Kompaktiški kelio trupiniai – viena eilutė, slenkama horizontaliai */
   .breads{padding:6px 0!important;margin:0!important;border:0!important}
   .breads ul{display:flex!important;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;scrollbar-width:none;margin:0!important;padding:0!important;gap:0}
@@ -870,6 +881,19 @@ body { margin: 0; overflow: hidden; background: #fff; }
     // Naujienos straipsnis: dalintis, kalendorius
     if (/^\/naujienos\/[^/]+\/\d{4}\/\d{2}\//.test(state.path)) {
       const ab = doc.querySelector('.article-block');
+      // Kompaktiška straipsnio pradžia: kategorija · data virš pavadinimo, be „Paskelbta/Kategorija“ ir kelio trupinių
+      if (ab && !ab.querySelector('.proto-eyebrow')) {
+        const ul = ab.querySelector('ul'), h1 = ab.querySelector('h1');
+        const m = ul ? ul.textContent.match(/\d{4}-\d{2}-\d{2}/) : null;
+        const cat = ul ? ul.querySelector('a') : null;
+        if (h1 && (m || cat)) {
+          const ey = doc.createElement('div'); ey.className = 'proto-eyebrow';
+          ey.innerHTML = (cat ? cat.outerHTML : '') + (cat && m ? '<span aria-hidden="true">·</span>' : '') + (m ? '<span>' + m[0] + '</span>' : '');
+          h1.insertAdjacentElement('beforebegin', ey);
+          ul.remove();
+          doc.body.classList.add('proto-article');
+        }
+      }
       if (ab && !doc.getElementById('proto-share')) {
         const st = doc.createElement('style');
         st.textContent = '#proto-share,#proto-cal{display:flex;gap:8px;margin:14px 0 4px;clear:both;width:100%;float:left}#proto-share{border-top:1px solid #e3e4e6;padding-top:14px}#proto-cal a{flex:1;min-height:44px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid #2e7d32;background:#fff;border-radius:22px;color:#2e7d32!important;font-size:15px;font-weight:500;text-decoration:none}#proto-share a{flex:1;min-width:120px;min-height:42px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid #cfd4da;background:#fff;border-radius:21px;color:#333!important;font-size:14px;text-decoration:none}#proto-share i{color:#2e7d32}.acc-contrast-2-activated #proto-share a{background:#373737;color:#fff!important;border-color:#fff}.acc-contrast-2-activated #proto-share i{color:#fff}';
