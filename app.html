@@ -1379,7 +1379,7 @@ body { margin: 0; overflow: hidden; background: #fff; }
     state.sheet = k;
     $('sheetTitle').textContent = SHEETS[k][0];
     $('sheetBody').innerHTML = SHEETS[k][1]();
-    $('sheet').classList.toggle('full', k === 'search');
+    $('sheet').classList.toggle('full', k === 'search' || k === 'quick' || k === 'menu'); // apatinės juostos lapai – vienodo aukščio
     $('sheet').classList.add('on'); $('shade').classList.add('on');
     renderTabs();
     if (k === 'search') { runSearch(); setTimeout(() => { const q = $('q'); q && q.focus(); }, 320); }
