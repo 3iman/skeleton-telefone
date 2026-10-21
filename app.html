@@ -713,7 +713,7 @@ body { margin: 0; overflow: hidden; background: #fff; }
   @media (max-width:640px){
     body:not(.proto-home) .content-side{display:none!important}
   }
-  .content .back,.btn_back{display:none!important}
+  .content .back:not(.step-back),.btn_back{display:none!important}
   #page-font-size{display:none!important}
   /* Antraštės telefone – kompaktiškos */
   @media (max-width:640px){
@@ -787,6 +787,45 @@ body { margin: 0; overflow: hidden; background: #fff; }
   .proto-article .breads{display:none!important}
   /* Vieno lygio kelias („Pradžia“) dubliuoja grįžimo mygtuką – nerodome */
   .proto-crumb1 .breads{display:none!important}
+  /* Naujienos įkėlimo žingsniai telefone */
+  .pst{display:flex;flex-direction:column;gap:6px;margin:0 0 18px}
+  .pst-n{font-size:13px;color:#555}
+  .pst-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+  .pst-bar i{height:4px;border-radius:2px;background:#dfe2e5}
+  .pst-bar i.on{background:#2e7d32}
+  .pst-t{font-size:20px;font-weight:700;color:#222;line-height:1.25}
+  .proto-stepper .steps{display:none!important}
+  .proto-stepper .step-next,.proto-stepper .step-back{display:none!important}
+  .proto-stepper .has-tip{display:none!important}
+  .proto-stepper .form-row>label{display:block}
+  .proto-stepper .form-row>span,.pst-help{display:block;font-size:13px;color:#5f6368;line-height:1.4;margin-top:4px;font-weight:400;text-transform:none}
+  .proto-stepper .step-categories-title span{color:inherit!important;font-weight:400}
+  .proto-stepper .step-categories-title.pst-err span{color:#c62828!important;font-weight:500}
+  .pst-msg,.proto-stepper .form-row>span.pst-msg{display:block;color:#c62828!important;font-size:13px;font-weight:500;margin-top:4px}
+  .proto-stepper .step-3>h3{display:none}
+  .proto-stepper .area-admin{height:160px!important;min-height:0!important}
+  .proto-stepper .step-agreement.pst-agree{position:static!important;float:none!important;text-align:left!important;display:flex!important;flex-wrap:wrap;align-items:center;gap:8px;width:100%;margin:14px 0 0!important;padding:0!important}
+  .proto-stepper .step-agreement.pst-agree label{display:inline-block!important;position:relative;font-size:15px!important;color:#222!important;margin:0!important}
+  .proto-stepper .step-agreement.pst-agree .pst-msg{flex-basis:100%}
+  .proto-stepper input.pst-bad{border-color:#c62828!important;box-shadow:0 0 0 1px #c62828!important}
+  .pst-actions{position:sticky;bottom:0;z-index:5;display:flex;gap:8px;margin:18px -16px -16px;padding:12px 16px;background:#fff;border-top:1px solid #e3e4e6;clear:both}
+  .pst-actions button{flex:1;min-height:48px;border:1px solid #2e7d32;background:#2e7d32;color:#fff;font:inherit;font-size:16px;font-weight:500;cursor:pointer}
+  .pst-actions button.ghost{flex:0 0 auto;padding:0 18px;background:#fff;color:#2e7d32}
+  .pst-actions button[hidden]{display:none}
+  .pst-agree{margin:12px 0 0;display:flex;align-items:center;gap:8px;font-size:15px}
+  .pst-photos{display:flex;flex-direction:column;gap:12px}
+  .pst-drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:140px;border:2px dashed #b9c2ca;background:#f7f8f9;color:#333;font-size:15px;text-align:center;cursor:pointer;padding:16px}
+  .pst-drop svg{color:#2e7d32}
+  .pst-drop small{color:#5f6368;font-size:13px}
+  .pst-thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .pst-thumbs img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
+  .pst-done{display:flex;flex-direction:column;align-items:flex-start;gap:10px;font-size:15px;line-height:1.5;color:#333}
+  .pst-done b{font-size:20px;color:#1b5e20}
+  .acc-contrast-2-activated .pst-t,.acc-contrast-2-activated .pst-n,.acc-contrast-2-activated .pst-help,.acc-contrast-2-activated .pst-done{color:#fff}
+  .acc-contrast-2-activated .pst-actions{background:#373737;border-color:#fff}
+  .acc-contrast-2-activated .pst-actions button{background:#fff;color:#373737;border-color:#fff}
+  .acc-contrast-2-activated .pst-actions button.ghost{background:#373737;color:#fff}
+  .acc-contrast-2-activated .pst-drop{background:#373737;color:#fff;border-color:#fff}
   #proto-docs-tools{display:flex;flex-direction:column;gap:8px;padding:6px 0 12px;clear:both}
   .pdt-search{display:flex;align-items:center;gap:6px;height:48px;border:1px solid #cacaca;background:#fff;padding:0 4px 0 12px}
   .pdt-search:focus-within{border-color:#2e7d32;box-shadow:0 0 0 1px #2e7d32}
@@ -1184,6 +1223,7 @@ body { margin: 0; overflow: hidden; background: #fff; }
       }
     }
     if (state.path.startsWith('/dokumentai') && (doc.defaultView.innerWidth || 0) <= 640) protoDocs(doc);
+    if (state.path === '/naujienos/kurti' && (doc.defaultView.innerWidth || 0) <= 640) protoStepper(doc);
   }
 
   // ---------- Dokumentai telefone: paieška po pavadinimu, kategorijų medis lape ----------
@@ -1240,6 +1280,78 @@ body { margin: 0; overflow: hidden; background: #fff; }
     input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); input.blur(); } });
     clr.addEventListener('click', (e) => { e.preventDefault(); input.value = ''; run(); input.focus(); });
     if (input.value) run();
+  }
+  // ---------- Naujienos įkėlimas telefone: žingsnių juosta, apatiniai mygtukai, pagalba po laukais ----------
+  function protoStepper(doc) {
+    const form = doc.querySelector('.content-school form'); if (!form || form.querySelector('.pst')) return;
+    const wraps = [...form.querySelectorAll('.step-wrap')];
+    const names = [...form.querySelectorAll('.steps ol li')].map(li => { const t = li.textContent.trim(); return t.charAt(0).toUpperCase() + t.slice(1); });
+    if (!wraps.length || names.length < 4) return;
+    doc.body.classList.add('proto-stepper');
+    // Foundation perkelia title į atskirą tooltip elementą – tekstą imame iš ten
+    const tipText = (t) => { if (!t) return ''; if (t.title) return t.title; const id = t.getAttribute('aria-describedby'); const el = id && doc.getElementById(id); return el ? el.textContent.trim() : (t.getAttribute('data-title') || ''); };
+    // Pagalba: ? ikonų tekstas – iškart po laukeliu (telefone hover nėra)
+    form.querySelectorAll('.form-row').forEach(r => { const tip = r.querySelector('.has-tip'); const sp = r.querySelector(':scope > span'); const tt = tipText(tip); if (tt) { if (sp) sp.textContent = tt; else { const h = doc.createElement('span'); h.textContent = tt; r.appendChild(h); } } });
+    form.querySelectorAll('.step-label').forEach(l => { const tt = tipText(l.querySelector('.has-tip')); if (tt) { const h = doc.createElement('div'); h.className = 'pst-help'; h.textContent = tt; l.appendChild(h); } });
+    form.querySelectorAll('input[type="text"]').forEach(i => { i.setAttribute('enterkeyhint', 'next'); i.setAttribute('autocapitalize', 'sentences'); });
+    const top = doc.createElement('div'); top.className = 'pst';
+    top.innerHTML = '<div class="pst-n"></div><div class="pst-bar" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div class="pst-t" tabindex="-1"></div>';
+    form.prepend(top);
+    // Žingsnis 4 (nuotraukos) ir patvirtinimas – svetainėje jie būna po išsaugojimo; prototipe parodome vietoje
+    const w4 = doc.createElement('div'); w4.className = 'small-12 columns nopad step-wrap step-4'; w4.style.display = 'none';
+    w4.innerHTML = '<div class="pst-photos"><label class="pst-drop"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h3l2-3h6l2 3h3v13H4zM12 10a4 4 0 100 8 4 4 0 000-8z"/></svg><span><b>Pasirinkti nuotraukas</b></span><small>Iš galerijos arba nufotografuokite dabar. Galima kelias.</small><input type="file" accept="image/*" multiple hidden></label><div class="pst-thumbs"></div></div>';
+    const w5 = doc.createElement('div'); w5.className = 'small-12 columns nopad step-wrap step-5'; w5.style.display = 'none';
+    w5.innerHTML = '<div class="pst-done" role="status"><b>Ačiū! Naujiena išsiųsta</b><span>Svetainės administratorius peržiūrės ir paskelbs. Prototipe forma niekur nesiunčiama.</span></div>';
+    wraps[wraps.length - 1].after(w4); w4.after(w5);
+    const fileIn = w4.querySelector('input[type=file]'), thumbs = w4.querySelector('.pst-thumbs');
+    fileIn.addEventListener('change', () => { thumbs.innerHTML = ''; [...fileIn.files].slice(0, 12).forEach(f => { const im = doc.createElement('img'); im.alt = ''; im.src = URL.createObjectURL(f); thumbs.appendChild(im); }); });
+    // Sutikimas su taisyklėmis – matomas virš mygtukų
+    const agree = form.querySelector('.step-agreement'); if (agree) { agree.classList.add('pst-agree'); wraps[2] && wraps[2].appendChild(agree); }
+    const bar = doc.createElement('div'); bar.className = 'pst-actions';
+    bar.innerHTML = '<button type="button" class="ghost" data-pst="back">Atgal</button><button type="button" data-pst="next">Toliau</button>';
+    form.appendChild(bar);
+    const [bBack, bNext] = bar.querySelectorAll('button');
+    let cur = 0;
+    const all = () => [...form.querySelectorAll('.step-wrap')];
+    const show = (i, focus) => {
+      cur = i; all().forEach((w, k) => { w.style.display = k === i ? 'block' : 'none'; });
+      const n = Math.min(i, 3);
+      top.hidden = i > 3;
+      top.querySelector('.pst-n').textContent = (n + 1) + ' žingsnis iš 4';
+      top.querySelectorAll('.pst-bar i').forEach((x, k) => x.classList.toggle('on', k <= n));
+      top.querySelector('.pst-t').textContent = names[n];
+      bBack.hidden = i === 0 || i > 3;
+      bNext.textContent = i === 2 ? 'Išsaugoti ir toliau' : i === 3 ? 'Pateikti' : i > 3 ? 'Į naujienas' : 'Toliau';
+      if (focus) { doc.defaultView.scrollTo({ top: 0, behavior: 'smooth' }); top.querySelector('.pst-t').focus({ preventScroll: true }); }
+    };
+    const err = (el, msg) => { el.classList.add('pst-bad'); let m = el.parentElement.querySelector('.pst-msg'); if (!m) { m = doc.createElement('span'); m.className = 'pst-msg'; el.after(m); } m.textContent = msg; };
+    const clearErr = () => { form.querySelectorAll('.pst-bad').forEach(x => x.classList.remove('pst-bad')); form.querySelectorAll('.pst-msg').forEach(x => x.remove()); form.querySelectorAll('.pst-err').forEach(x => x.classList.remove('pst-err')); };
+    const valid = () => {
+      clearErr();
+      if (cur === 0) {
+        const t = form.querySelector('[name="naujiena_title"]');
+        const cat = form.querySelector('[name="naujiena_category"]:checked');
+        let ok = true;
+        if (t && !t.value.trim()) { err(t, 'Įrašykite antraštę'); ok = false; }
+        if (!cat) { const c = form.querySelector('.step-categories-title'); c && c.classList.add('pst-err'); ok = false; }
+        if (!ok) { const f = form.querySelector('.pst-bad') || form.querySelector('.pst-err'); f && f.scrollIntoView({ behavior: 'smooth', block: 'center' }); if (t && t.classList.contains('pst-bad')) t.focus(); }
+        return ok;
+      }
+      if (cur === 2) {
+        const c = form.querySelector('#step-check');
+        if (c && !c.checked) { const a = c.closest('.step-agreement'); a.classList.add('pst-err'); let m = a.querySelector('.pst-msg'); if (!m) { m = doc.createElement('span'); m.className = 'pst-msg'; a.appendChild(m); } m.textContent = 'Pažymėkite, kad sutinkate su taisyklėmis'; return false; }
+      }
+      return true;
+    };
+    form.addEventListener('input', (e) => { if (e.target.classList.contains('pst-bad') && e.target.value.trim()) { e.target.classList.remove('pst-bad'); const m = e.target.parentElement.querySelector('.pst-msg'); m && m.remove(); } });
+    form.addEventListener('change', (e) => { if (e.target.name === 'naujiena_category') { const c = form.querySelector('.step-categories-title'); c && c.classList.remove('pst-err'); } if (e.target.id === 'step-check') { const a = e.target.closest('.step-agreement'); a.classList.remove('pst-err'); const m = a.querySelector('.pst-msg'); m && m.remove(); } });
+    bNext.addEventListener('click', () => {
+      if (cur > 3) { go('/naujienos'); return; }
+      if (!valid()) return;
+      show(cur + 1, true);
+    });
+    bBack.addEventListener('click', () => { clearErr(); if (cur > 0) show(cur - 1, true); });
+    show(0, false);
   }
   function sheetDocCats() {
     const T = state.docTree || [];
