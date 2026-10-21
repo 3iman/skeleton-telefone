@@ -1,0 +1,81 @@
+/* Skeleton – slenkamos lentelės. Klases uždeda table-scroll.js */
+
+.ts { position: relative; margin: 8px 0 16px; }
+
+/* Vienintelis slinkimo konteineris */
+.ts__box {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+.ts__box:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+
+/* Esamų apvalkalų slinkimą išjungiame – slenka tik .ts__box */
+.ts__box .table-wrapper,
+.ts__box .sheet-table,
+.ts__box .table-responsive,
+.ts__box .table-scroll,
+.ts-host { overflow: visible !important; max-width: none !important; }
+.ts__box table { margin: 0 !important; }
+
+/* Užuomina – tik kai lentelė netelpa; dingsta paslinkus */
+.ts__hint {
+  display: none;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #555;
+  transition: opacity .3s;
+}
+.ts--scrollable .ts__hint { display: flex; }
+.ts--seen .ts__hint { opacity: 0; }
+.ts__arrow { display: inline-block; animation: ts-nudge 1.6s ease-in-out 3; }
+@keyframes ts-nudge { 50% { transform: translateX(5px); } }
+
+/* Šešėlis krašte, kuriame dar yra turinio */
+.ts::before,
+.ts::after {
+  content: "";
+  position: absolute;
+  top: 26px;              /* po užuomina */
+  bottom: 0;
+  width: 24px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .2s;
+  z-index: 2;
+}
+.ts::after  { right: 0; background: linear-gradient(to left,  rgba(0,0,0,.18), rgba(0,0,0,0)); }
+.ts::before { left: 0;  background: linear-gradient(to right, rgba(0,0,0,.18), rgba(0,0,0,0)); }
+.ts--scrollable:not(.ts--end)::after { opacity: 1; }
+/* Kairysis šešėlis – tik be prilipusio stulpelio (su juo šešėlis dedamas ant stulpelio) */
+.ts--scrollable:not(.ts--start):not(.ts--sticky)::before { opacity: 1; }
+
+/* Prilipęs pirmas stulpelis (fono spalvą celėms nustato JS) */
+.ts--sticky tr > :first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background-clip: padding-box;
+}
+.ts--sticky:not(.ts--start) tr > :first-child { box-shadow: 6px 0 8px -6px rgba(0,0,0,.25); }
+
+/* Kontrastiniai režimai */
+.acc-contrast-2-activated .ts__hint { color: #fff; }
+.acc-contrast-1-activated .ts::after,
+.acc-contrast-2-activated .ts::after { background: linear-gradient(to left, rgba(127,127,127,.5), rgba(127,127,127,0)); }
+.acc-contrast-1-activated .ts::before,
+.acc-contrast-2-activated .ts::before { background: linear-gradient(to right, rgba(127,127,127,.5), rgba(127,127,127,0)); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ts__arrow { animation: none; }
+  .ts__hint, .ts::before, .ts::after { transition: none; }
+}
+
+@media print {
+  .ts__hint, .ts::before, .ts::after { display: none !important; }
+  .ts__box { overflow: visible; }
+}
