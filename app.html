@@ -710,7 +710,7 @@ body { margin: 0; overflow: hidden; background: #fff; }
   .proto-tcards .proto-tel{display:inline-flex;align-items:center;min-height:36px;padding:0 14px;margin:2px 0;border-radius:18px;background:#2e7d32;color:#fff!important;font-weight:500;text-decoration:none}
   .proto-tscroll{position:relative;margin:8px 0 16px}
   .proto-tscroll .pts-in{overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-width:thin}
-  .proto-tscroll .pts-in>.table-scroll{overflow:visible!important}
+  .proto-tscroll .pts-in .table-scroll,.proto-tscroll .pts-in .table-responsive,.proto-tscroll .pts-in .table-wrapper{overflow:visible!important;max-width:none!important;padding:0!important}
   .proto-tscroll table{margin:0!important}
   .proto-tscroll .pts-hint{display:none;align-items:center;gap:6px;justify-content:flex-end;font-size:13px;color:#555;margin-bottom:6px;transition:opacity .3s}
   .proto-tscroll .pts-hint span{display:inline-block;animation:ptsNudge 1.6s ease-in-out 3}
@@ -964,7 +964,7 @@ body { margin: 0; overflow: hidden; background: #fff; }
       if (tb.closest('.documents-table') || tb.classList.contains('documents-table') || tb.closest('.proto-tscroll')) return;
       const wrap = doc.createElement('div'); wrap.className = 'proto-tscroll';
       wrap.innerHTML = '<div class="pts-hint" aria-hidden="true">Slinkite lentelę <span>→</span></div><div class="pts-in" tabindex="0" role="region"></div>';
-      const host = tb.closest('.table-scroll') || tb;
+      const host = tb.closest('.table-wrapper, .table-scroll') || tb;
       host.replaceWith(wrap);
       const inr = wrap.querySelector('.pts-in');
       inr.appendChild(host);
