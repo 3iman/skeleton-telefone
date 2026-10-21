@@ -708,6 +708,25 @@ body { margin: 0; overflow: hidden; background: #fff; }
   .proto-tcards .tc-l{font-size:12px;color:#777;text-transform:uppercase;letter-spacing:.03em}
   .proto-tcards .tc-v,.proto-tcards .tc-v p{margin:0!important;font-size:15px;line-height:1.4}
   .proto-tcards .proto-tel{display:inline-flex;align-items:center;min-height:36px;padding:0 14px;margin:2px 0;border-radius:18px;background:#2e7d32;color:#fff!important;font-weight:500;text-decoration:none}
+  .proto-tscroll{position:relative;margin:8px 0 16px}
+  .proto-tscroll .pts-in{overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-width:thin}
+  .proto-tscroll .pts-in>.table-scroll{overflow:visible!important}
+  .proto-tscroll table{margin:0!important}
+  .proto-tscroll .pts-hint{display:none;align-items:center;gap:6px;justify-content:flex-end;font-size:13px;color:#555;margin-bottom:6px;transition:opacity .3s}
+  .proto-tscroll .pts-hint span{display:inline-block;animation:ptsNudge 1.6s ease-in-out 3}
+  @keyframes ptsNudge{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}
+  .proto-tscroll.ov .pts-hint{display:flex}
+  .proto-tscroll.seen .pts-hint{opacity:0}
+  .proto-tscroll::before,.proto-tscroll::after{content:"";position:absolute;top:26px;bottom:0;width:24px;pointer-events:none;opacity:0;transition:opacity .2s;z-index:2}
+  .proto-tscroll::after{right:0;background:linear-gradient(to left,rgba(0,0,0,.18),rgba(0,0,0,0))}
+  .proto-tscroll::before{left:0;background:linear-gradient(to right,rgba(0,0,0,.18),rgba(0,0,0,0))}
+  .proto-tscroll.r::after{opacity:1}
+  .proto-tscroll.ov tr>:first-child{position:sticky;left:0;z-index:1;background-clip:padding-box;width:36vw;min-width:7.5em;max-width:200px}
+  .proto-tscroll.ov tbody tr>:first-child{background-color:#fff}
+  .proto-tscroll.ov tbody tr:nth-child(even)>:first-child{background-color:#f2f2f2}
+  .proto-tscroll.ov.l tr>:first-child{box-shadow:6px 0 8px -6px rgba(0,0,0,.25)}
+  @media (prefers-reduced-motion:reduce){.proto-tscroll .pts-hint span{animation:none}}
+  .acc-contrast-2-activated .proto-tscroll .pts-hint{color:#fff}
   .acc-contrast-1-activated .proto-tcards .tc{border-color:#373737}
   .acc-contrast-1-activated .proto-tcards .proto-tel{background:#373737}
   .acc-contrast-2-activated .proto-tcards .tc{background:#373737;border-color:#fff}
@@ -939,6 +958,28 @@ body { margin: 0; overflow: hidden; background: #fff; }
         return `<div class="tc"><div class="tc-t">${cs[0].innerHTML}</div>${rest}</div>`;
       }).join('');
       (tb.closest('.table-scroll') || tb).replaceWith(list);
+    });
+    // Likusios plačios lentelės: slinkimo užuomina (šešėlis krašte, prilipęs 1 stulpelis, „Slinkite →“)
+    doc.querySelectorAll('.content-school table, .content-main .entry table').forEach(tb => {
+      if (tb.closest('.documents-table') || tb.classList.contains('documents-table') || tb.closest('.proto-tscroll')) return;
+      const wrap = doc.createElement('div'); wrap.className = 'proto-tscroll';
+      wrap.innerHTML = '<div class="pts-hint" aria-hidden="true">Slinkite lentelę <span>→</span></div><div class="pts-in" tabindex="0" role="region"></div>';
+      const host = tb.closest('.table-scroll') || tb;
+      host.replaceWith(wrap);
+      const inr = wrap.querySelector('.pts-in');
+      inr.appendChild(host);
+      const cap = (tb.closest('.entry, .content-school') || doc).querySelector('h2, h3');
+      inr.setAttribute('aria-label', 'Lentelė, slenkama į šonus' + (cap ? ': ' + cap.textContent.trim() : ''));
+      const upd = () => {
+        const max = inr.scrollWidth - inr.clientWidth;
+        wrap.classList.toggle('ov', max > 4);
+        wrap.classList.toggle('l', inr.scrollLeft > 4);
+        wrap.classList.toggle('r', inr.scrollLeft < max - 4);
+        if (inr.scrollLeft > 24) wrap.classList.add('seen');
+      };
+      inr.addEventListener('scroll', upd, { passive: true });
+      doc.defaultView.addEventListener('resize', upd);
+      doc.defaultView.requestAnimationFrame(upd); setTimeout(upd, 300);
     });
     // Darbuotojų kortelės: maža nuotrauka šalia vardo, be nuotraukos – inicialai, kontaktai mygtukais
     if (phone) doc.querySelectorAll('.employee-horizontal-item').forEach(it => {
