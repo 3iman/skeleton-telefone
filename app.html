@@ -689,6 +689,30 @@ body { margin: 0; overflow: hidden; background: #fff; }
   }
   .content .back,.btn_back{display:none!important}
   #page-font-size{display:none!important}
+  /* Antraštės telefone – kompaktiškos */
+  @media (max-width:640px){
+    .content-main-title,.content-main-title h1,.content-main-title span{font-size:22px!important;line-height:1.25!important;margin:2px 0 10px!important;padding:0!important;text-wrap:balance}
+    .content-main{padding-top:6px!important}
+    .content-school h1,.content-school h2,.entry h2{font-size:20px!important;line-height:1.3!important;margin:16px 0 10px!important}
+    .content-school>h1:first-child,.content-school>h2:first-child{margin-top:0!important}
+    .content-school h3,.entry h3{font-size:18px!important;line-height:1.3!important;margin:16px 0 8px!important}
+    .content-school h4,.entry h4{font-size:16px!important;margin:14px 0 6px!important}
+    .content-school{padding:16px!important}
+  }
+  /* Lentelės kortelėmis */
+  .proto-tcards{display:flex;flex-direction:column;gap:10px;margin:8px 0 16px}
+  .proto-tcards .tc{border:1px solid #e3e4e6;border-radius:8px;padding:12px 14px;background:#fff;display:flex;flex-direction:column;gap:8px}
+  .proto-tcards .tc-t,.proto-tcards .tc-t p{margin:0!important;font-size:15px;line-height:1.4;color:#555}
+  .proto-tcards .tc-t strong{display:block;font-size:16px;color:#222;margin-bottom:2px}
+  .proto-tcards .tc-f{display:flex;flex-direction:column;gap:2px}
+  .proto-tcards .tc-l{font-size:12px;color:#777;text-transform:uppercase;letter-spacing:.03em}
+  .proto-tcards .tc-v,.proto-tcards .tc-v p{margin:0!important;font-size:15px;line-height:1.4}
+  .proto-tcards .proto-tel{display:inline-flex;align-items:center;min-height:36px;padding:0 14px;margin:2px 0;border-radius:18px;background:#2e7d32;color:#fff!important;font-weight:500;text-decoration:none}
+  .acc-contrast-1-activated .proto-tcards .tc{border-color:#373737}
+  .acc-contrast-1-activated .proto-tcards .proto-tel{background:#373737}
+  .acc-contrast-2-activated .proto-tcards .tc{background:#373737;border-color:#fff}
+  .acc-contrast-2-activated .proto-tcards .tc-t,.acc-contrast-2-activated .proto-tcards .tc-t strong,.acc-contrast-2-activated .proto-tcards .tc-l{color:#fff}
+  .acc-contrast-2-activated .proto-tcards .proto-tel{background:#fff;color:#373737!important}
   /* Darbo laikas */
   .proto-hours{display:flex;flex-direction:column;gap:2px;margin:6px 0 12px;font-size:15px}
   .proto-hours .ph-row{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid #eee}
@@ -884,6 +908,37 @@ body { margin: 0; overflow: hidden; background: #fff; }
         return `<div class="ph-row"><b>${lbl(g)}</b><span>${esc(g.vals[0] || '–')}</span></div>${extra ? `<div class="ph-x">${extra.replace(/Pietų pertrauka/i, 'Pietūs').replace(/Priėmimo valandos/i, 'Priėmimas')}</div>` : ''}`;
       }).join('') + (lunchAll ? `<div class="ph-x">Pietų pertrauka ${esc(lunchAll)}</div>` : '');
       tb.replaceWith(out);
+    });
+    // Puslapio pavadinimas: be uodegos iš &nbsp; (dėl jos pavadinimas lūždavo į papildomą eilutę)
+    doc.querySelectorAll('.content-main-title h1').forEach(h => { h.childNodes.forEach(n => { if (n.nodeType === 3) n.textContent = n.textContent.replace(/ +/g, ' ').replace(/\s+$/, ' '); }); });
+    // Turinio lentelės (2–4 stulpeliai) -> kortelės telefone
+    const PHONE_RE = /(\+370[\s\d]{8,13}\d|\b116\s?\d{3}\b|\b8\s?\(?\d{1,3}\)?[\s\d]{5,9}\d)/g;
+    if (phone) doc.querySelectorAll('.content-school table, .content-main .entry table').forEach(tb => {
+      if (tb.closest('.documents-table') || tb.classList.contains('documents-table') || tb.dataset.proto) return;
+      if (tb.querySelector('[rowspan], [colspan]')) return; // sudėtingos (kelių lygių) lentelės lieka slenkamos
+      const trs = [...tb.querySelectorAll('tr')];
+      if (trs.length < 2) return;
+      const cells = (tr) => [...tr.children].filter(c => /^T[DH]$/.test(c.tagName));
+      const first = cells(trs[0]);
+      const n = first.length;
+      if (n < 2 || n > 4) return;
+      const headIsTh = first.every(c => c.tagName === 'TH') || !!tb.querySelector('thead');
+      const head = headIsTh ? first.map(c => c.textContent.replace(/\s+/g, ' ').trim()) : null;
+      if (!head || head.some(h => !h)) return; // be aiškios antraštės arba kelių lygių antraštė – paliekame lentelę
+      const body = trs.slice(1);
+      if (body.some(tr => cells(tr).length !== n)) return;
+      tb.dataset.proto = '1';
+      const list = doc.createElement('div'); list.className = 'proto-tcards';
+      list.innerHTML = body.map(tr => {
+        const cs = cells(tr);
+        const rest = cs.slice(1).map((c, i) => {
+          let html = c.innerHTML;
+          if (!c.querySelector('a[href^="tel:"]')) html = html.replace(PHONE_RE, (m) => `<a class="proto-tel" href="tel:${m.replace(/[^\d+]/g, '')}">${m.trim()}</a>`);
+          return `<div class="tc-f">${head && head[i + 1] ? `<span class="tc-l">${esc(head[i + 1])}</span>` : ''}<div class="tc-v">${html}</div></div>`;
+        }).join('');
+        return `<div class="tc"><div class="tc-t">${cs[0].innerHTML}</div>${rest}</div>`;
+      }).join('');
+      (tb.closest('.table-scroll') || tb).replaceWith(list);
     });
     // Darbuotojų kortelės: maža nuotrauka šalia vardo, be nuotraukos – inicialai, kontaktai mygtukais
     if (phone) doc.querySelectorAll('.employee-horizontal-item').forEach(it => {
