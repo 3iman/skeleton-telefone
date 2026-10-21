@@ -860,6 +860,12 @@ body { margin: 0; overflow: hidden; background: #fff; }
     if (!doc.getElementById('proto-css')) { const s = doc.createElement('style'); s.id = 'proto-css'; s.textContent = PROTO_CSS; doc.head.appendChild(s); }
     rebuildFooter(doc);
     rebuildLessons(doc);
+    // Naujienų kortelės: tik data · kategorija (be „Paskelbta:“, „Kategorija:“)
+    doc.querySelectorAll('.news-item-content .news-info ul').forEach(ul => {
+      const m = ul.textContent.match(/\d{4}-\d{2}-\d{2}/);
+      const cat = ul.querySelector('a');
+      ul.innerHTML = (m ? '<li>' + m[0] + '</li>' : '') + (cat ? (m ? '<li aria-hidden="true">·</li>' : '') + '<li>' + cat.outerHTML + '</li>' : '');
+    });
     const bl = doc.querySelector('.breads ul'); if (bl) { const f = bl.querySelector('li a'); if (f && /Titulinis/.test(f.textContent)) f.textContent = 'Pradžia'; bl.scrollLeft = bl.scrollWidth; }
     // Naujienos straipsnis: dalintis, kalendorius
     if (/^\/naujienos\/[^/]+\/\d{4}\/\d{2}\//.test(state.path)) {
