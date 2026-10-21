@@ -120,6 +120,11 @@ body { margin: 0; overflow: hidden; background: #fff; }
 .search svg { stroke: #2e7d32; flex-shrink: 0; }
 .search input { flex: 1; min-width: 0; border: 0; outline: 0; background: none; font: inherit; font-size: 16px; color: #222; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.dct { display: flex; flex-direction: column; }
+.dct-i { width: 100%; display: flex; align-items: center; min-height: 48px; padding: 0 12px; border: 0; border-bottom: 1px solid #eceef0; background: none; color: #222; font: inherit; font-size: 16px; font-weight: 500; text-align: left; cursor: pointer; }
+.dct-i.sub { min-height: 44px; padding-left: 28px; font-size: 15px; font-weight: 400; color: #444; }
+.dct-i.on { background: #e8f3e9; color: #1b5e20; box-shadow: inset 3px 0 0 #2e7d32; }
+.app.c2 .dct-i { color: #fff; border-color: #666; } .app.c2 .dct-i.on { background: #1c1c1c; color: #fff; box-shadow: inset 3px 0 0 #fff; }
 .arch { display: flex; flex-direction: column; gap: 18px; }
 .arch-y { display: flex; flex-direction: column; gap: 8px; }
 .arch-yh { display: flex; align-items: center; justify-content: space-between; min-height: 40px; padding: 0; border: 0; border-bottom: 1px solid #e3e4e6; background: none; color: #222; font: inherit; font-size: 17px; font-weight: 700; text-align: left; cursor: pointer; }
@@ -760,7 +765,13 @@ body { margin: 0; overflow: hidden; background: #fff; }
     .acc-contrast-2-activated .proto-contact a{border-color:#fff;color:#fff!important;background:#373737}
     .acc-contrast-2-activated .proto-contact a:first-child{background:#fff;color:#373737!important}
     /* Dokumentų lentelė: ikona + pavadinimas, data po pavadinimu */
-    .documents-table tr.document-item{display:grid!important;grid-template-columns:40px 1fr;align-items:start;border-bottom:1px solid #eee}
+    .documents-table,.documents-table tbody{display:block!important;width:100%!important;min-width:0!important}
+    .documents-table tr:not(.document-item){display:block!important;width:100%}
+    .documents-table tr:not(.document-item)>*{display:block!important;width:100%!important;box-sizing:border-box}
+    .documents-table tr.documents-subcategory-title>*:not(:first-child){display:none!important}
+    .documents-table .pdt-hide,.documents-table tr.pdt-hide,.documents-table.pdt-hide{display:none!important}
+    .documents-table tr.document-item td.doc-title{min-width:0;overflow-wrap:anywhere}
+    .documents-table tr.document-item{display:grid!important;grid-template-columns:40px minmax(0,1fr);width:100%;align-items:start;border-bottom:1px solid #eee}
     .documents-table tr.document-item td{border:0!important;padding:10px 6px 0!important}
     .documents-table tr.document-item td.document-download{display:none!important}
     .documents-table tr.document-item td.document-preview{grid-row:1 / span 2;padding-top:12px!important;font-size:20px}
@@ -774,6 +785,27 @@ body { margin: 0; overflow: hidden; background: #fff; }
   .proto-article .breads{display:none!important}
   /* Vieno lygio kelias („Pradžia“) dubliuoja grįžimo mygtuką – nerodome */
   .proto-crumb1 .breads{display:none!important}
+  #proto-docs-tools{display:flex;flex-direction:column;gap:8px;padding:6px 0 12px;clear:both}
+  .pdt-search{display:flex;align-items:center;gap:6px;height:48px;border:1px solid #cacaca;background:#fff;padding:0 4px 0 12px}
+  .pdt-search:focus-within{border-color:#2e7d32;box-shadow:0 0 0 1px #2e7d32}
+  .pdt-search svg{color:#2e7d32;flex-shrink:0}
+  .pdt-search input{flex:1;min-width:0;height:46px!important;border:0!important;margin:0!important;padding:0!important;box-shadow:none!important;background:none!important;outline:0;font-size:16px!important;color:#222}
+  .pdt-search input::-webkit-search-cancel-button{display:none}
+  .pdt-clear{width:40px;height:40px;flex-shrink:0;border:0;border-radius:50%;background:none;color:#555;font-size:22px;line-height:1;cursor:pointer}
+  .pdt-clear[hidden]{display:none}
+  .pdt-status{font-size:13px;color:#555;line-height:1.4}
+  .pdt-status:empty{display:none}
+  .pdt-empty{padding:18px 16px;display:flex;flex-direction:column;gap:10px;align-items:flex-start;font-size:15px;color:#444;line-height:1.45}
+  .pdt-empty button{min-height:40px;padding:0 14px;border:1px solid #2e7d32;background:#fff;color:#2e7d32;font:inherit;font-size:14px;cursor:pointer}
+  .pdt-cat{height:44px;display:flex;align-items:center;gap:8px;padding:0 12px;border:1px solid #cacaca;background:#fff;color:#333;font:inherit;font-size:15px;text-align:left;cursor:pointer}
+  .pdt-cat span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pdt-cat svg{color:#2e7d32;flex-shrink:0}
+  .pdt-cat.on{border-color:#2e7d32;color:#2e7d32;font-weight:500}
+  .proto-docs .doc-search-block,.proto-docs .documents-loading{display:none!important}
+  .acc-contrast-2-activated .pdt-search,.acc-contrast-2-activated .pdt-cat,.acc-contrast-2-activated .pdt-empty button{background:#373737;border-color:#fff;color:#fff}
+  .acc-contrast-2-activated .pdt-search input{color:#fff}
+  .acc-contrast-2-activated .pdt-search svg,.acc-contrast-2-activated .pdt-cat svg{color:#fff}
+  .acc-contrast-2-activated .pdt-status,.acc-contrast-2-activated .pdt-empty{color:#fff}
   #proto-news-filter{display:flex;gap:8px;padding:8px 0 4px;clear:both}
   #proto-news-filter select{flex:1;min-width:0;float:none!important;width:auto!important;margin:0!important;height:44px;font-size:15px}
   #proto-news-filter .pnf-arch{flex:0 0 auto;max-width:48%;height:44px;display:inline-flex;align-items:center;gap:8px;padding:0 14px;border:1px solid #cacaca;background:#fff;color:#333;font:inherit;font-size:15px;cursor:pointer}
@@ -1149,6 +1181,68 @@ body { margin: 0; overflow: hidden; background: #fff; }
         // Kai kategorijos nėra pasirinktos – archyvo puslapyje select rodo „Visos naujienos“
       }
     }
+    if (state.path.startsWith('/dokumentai') && (doc.defaultView.innerWidth || 0) <= 640) protoDocs(doc);
+  }
+
+  // ---------- Dokumentai telefone: paieška po pavadinimu, kategorijų medis lape ----------
+  const fold = (t) => (t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const ltDocs = (n) => { const a = n % 10, b = n % 100; return n + ' ' + (a === 1 && b !== 11 ? 'dokumentas' : a >= 2 && a <= 9 && (b < 11 || b > 19) ? 'dokumentai' : 'dokumentų'); };
+  function protoDocs(doc) {
+    if (doc.getElementById('proto-docs-tools')) return;
+    const title = doc.querySelector('.content-main-title');
+    const input = doc.getElementById('documents-filter');
+    const list = doc.getElementById('documents-list');
+    if (!title) return;
+    // Kategorijų medis iš (paslėpto) šoninio stulpelio
+    const tree = [...doc.querySelectorAll('.content-side .widget-topic-list > ul > li')].map(li => {
+      const a = li.querySelector(':scope > a');
+      return { t: a ? a.textContent.trim() : '', h: a ? a.getAttribute('href') : '', cur: li.classList.contains('current'), k: [...li.querySelectorAll(':scope > ul > li > a')].map(x => ({ t: x.textContent.trim(), h: x.getAttribute('href'), cur: x.parentElement.classList.contains('current') })) };
+    }).filter(x => x.t);
+    state.docTree = tree;
+    const here = norm(location.href).path;
+    let curName = '';
+    tree.forEach(n => { if ((norm(n.h).path || '') === state.path) curName = n.t; n.k.forEach(k => { if ((norm(k.h).path || '') === state.path) curName = n.t + ' › ' + k.t; }); });
+    doc.body.classList.add('proto-docs');
+    const box = doc.createElement('div'); box.id = 'proto-docs-tools'; box.className = 'small-12 columns nopad';
+    const ic = (d) => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + d + '"/></svg>';
+    box.innerHTML = (input ? '<label class="pdt-search">' + ic('M11 4a7 7 0 100 14 7 7 0 000-14zM16 16l5 5') + '<button type="button" class="pdt-clear" hidden aria-label="Išvalyti paiešką">×</button></label><div class="pdt-status" role="status" aria-live="polite"></div>' : '')
+      + (tree.length ? '<button type="button" class="pdt-cat' + (curName ? ' on' : '') + '" aria-haspopup="dialog">' + ic('M3 6h7l2 2h9v11H3z') + '<span>' + esc(curName || 'Visos kategorijos') + '</span>' + ic('M9 6l6 6-6 6') + '</button>' : '');
+    title.insertAdjacentElement('afterend', box);
+    const cat = box.querySelector('.pdt-cat'); if (cat) cat.addEventListener('click', () => openSheet('doccats'));
+    if (!input || !list) return;
+    // Svetainės filtras rodo „loaderį“ 1,5 s net kai rezultatai jau paruošti – keičiame savu, momentiniu
+    try { const jq = doc.defaultView.jQuery; if (jq) jq(input).off('keyup'); } catch (e) {}
+    input.type = 'search'; input.setAttribute('enterkeyhint', 'search'); input.setAttribute('aria-label', 'Ieškoti dokumentų');
+    const lab = box.querySelector('.pdt-search'); lab.insertBefore(input, lab.querySelector('.pdt-clear'));
+    const clr = box.querySelector('.pdt-clear'), st = box.querySelector('.pdt-status');
+    const items = [...list.querySelectorAll('.document-item')].map(tr => ({ tr, x: fold((tr.querySelector('.search-data') || tr).textContent) }));
+    let empty = null;
+    const run = () => {
+      const q = input.value.trim(); const words = fold(q).split(/\s+/).filter(Boolean);
+      clr.hidden = !q;
+      let n = 0;
+      items.forEach(it => { const ok = words.every(w => it.x.includes(w)); it.tr.classList.toggle('pdt-hide', !ok); it.tr.classList.toggle('visible', ok); if (ok) n++; });
+      // Tuščios (sub)kategorijos – slepiamos kartu su antraštėmis
+      list.querySelectorAll('tbody').forEach(tb => { const vis = [...tb.querySelectorAll('.document-item')].some(r => !r.classList.contains('pdt-hide')); const t = tb.querySelector('.documents-subcategory-title'); if (t) t.classList.toggle('pdt-hide', !vis); tb.dataset.vis = vis ? '1' : ''; });
+      list.querySelectorAll('.documents-table').forEach(t => { t.classList.toggle('pdt-hide', ![...t.querySelectorAll('.document-item')].some(r => !r.classList.contains('pdt-hide'))); });
+      st.textContent = q ? (n ? 'Rasta: ' + ltDocs(n) : '') : '';
+      if (empty) { empty.remove(); empty = null; }
+      if (q && !n) {
+        empty = doc.createElement('div'); empty.className = 'pdt-empty';
+        empty.innerHTML = '<div>Dokumentų pagal „' + esc(q) + '“ nerasta.</div><button type="button">Ieškoti visoje svetainėje</button>';
+        empty.querySelector('button').addEventListener('click', () => { openSheet('search'); setTimeout(() => { $('q').value = q; runSearch(); }, 60); });
+        list.prepend(empty);
+      }
+    };
+    input.addEventListener('input', run);
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); input.blur(); } });
+    clr.addEventListener('click', (e) => { e.preventDefault(); input.value = ''; run(); input.focus(); });
+    if (input.value) run();
+  }
+  function sheetDocCats() {
+    const T = state.docTree || [];
+    const isCur = (h) => (norm(h).path || '') === state.path;
+    return `<div class="dct">${T.map(n => `<button class="dct-i${isCur(n.h) ? ' on' : ''}" data-href="${esc(n.h)}"${isCur(n.h) ? ' aria-current="page"' : ''}>${esc(n.t)}</button>${n.k.length ? `<div class="dct-k">${n.k.map(k => `<button class="dct-i sub${isCur(k.h) ? ' on' : ''}" data-href="${esc(k.h)}"${isCur(k.h) ? ' aria-current="page"' : ''}>${esc(k.t)}</button>`).join('')}</div>` : ''}`).join('')}</div>`;
   }
 
   // ---------- Antraštė ir juosta ----------
@@ -1295,7 +1389,7 @@ body { margin: 0; overflow: hidden; background: #fff; }
       </div>`).join('')}</div>
       ${cur.startsWith('/naujienos/archyvas') ? `<button class="big-btn ghost" data-href="/naujienos">Visos naujienos</button>` : ''}`;
   }
-  const SHEETS = { archive: ['Naujienų archyvas', sheetArchive], quick: ['Greičiau', sheetQuick], search: ['Paieška', sheetSearch], menu: ['Meniu', sheetMenu], a11y: ['Prieinamumas', sheetA11y], install: ['Įdiegti telefone', sheetInstall], push: ['Gauti pranešimus?', sheetPush] };
+  const SHEETS = { doccats: ['Dokumentų kategorijos', sheetDocCats], archive: ['Naujienų archyvas', sheetArchive], quick: ['Greičiau', sheetQuick], search: ['Paieška', sheetSearch], menu: ['Meniu', sheetMenu], a11y: ['Prieinamumas', sheetA11y], install: ['Įdiegti telefone', sheetInstall], push: ['Gauti pranešimus?', sheetPush] };
 
   // ---------- Dokumento peržiūra ----------
   function openViewer(title) {
