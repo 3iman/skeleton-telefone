@@ -91,6 +91,10 @@ body { margin: 0; overflow: hidden; background: #fff; }
 .shade.on { opacity: 1; pointer-events: auto; }
 .sheet { position: absolute; left: 0; right: 0; bottom: var(--tabh); max-height: calc(100% - 100px); z-index: 25; background: #fff; border-radius: 18px 18px 0 0; display: flex; flex-direction: column; transform: translateY(110%); transition: transform .3s cubic-bezier(.2,.8,.2,1); box-shadow: 0 -8px 24px rgba(0,0,0,.15); }
 .sheet.on { transform: none; }
+/* Paieška: per visą aukštį, apačia kyla kartu su klaviatūra (--kb), rezultatai matomi tarp lauko ir klaviatūros */
+.sheet.full { top: calc(env(safe-area-inset-top, 0px) + 8px); bottom: max(var(--tabh), var(--kb, 0px)); max-height: none; transition: transform .3s cubic-bezier(.2,.8,.2,1), bottom .2s ease; }
+.sheet.full .sb { flex: 1; min-height: 0; }
+.app.kb .tabs { visibility: hidden; }
 .grip { width: 40px; height: 4px; border-radius: 2px; background: #d0d4d8; margin: 10px auto 0; flex-shrink: 0; }
 .sh { display: flex; align-items: center; justify-content: space-between; padding: 6px 16px 8px; flex-shrink: 0; }
 .sh b { font-size: 18px; }
@@ -269,6 +273,7 @@ body { margin: 0; overflow: hidden; background: #fff; }
   /* Lapai – šoninis skydelis dešinėje */
   .sheet { top: 0; bottom: var(--tabh); right: 0; left: auto; width: 420px; max-height: none; border-radius: 18px 0 0 18px; transform: translateX(105%); box-shadow: -10px 0 30px rgba(0,0,0,.18); }
   .sheet.on { transform: none; }
+  .sheet.full { top: 0; }
   .grip { display: none; }
   .sh { padding: 18px 20px 10px; }
   .sb { padding: 0 20px 24px; }
@@ -1374,6 +1379,7 @@ body { margin: 0; overflow: hidden; background: #fff; }
     state.sheet = k;
     $('sheetTitle').textContent = SHEETS[k][0];
     $('sheetBody').innerHTML = SHEETS[k][1]();
+    $('sheet').classList.toggle('full', k === 'search');
     $('sheet').classList.add('on'); $('shade').classList.add('on');
     renderTabs();
     if (k === 'search') { runSearch(); setTimeout(() => { const q = $('q'); q && q.focus(); }, 320); }
@@ -1503,6 +1509,21 @@ body { margin: 0; overflow: hidden; background: #fff; }
   $('sheetClose').addEventListener('click', () => closeSheet());
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeSheet(); closeViewer(); } });
   document.addEventListener('input', (e) => { if (e.target.id === 'q') runSearch(); });
+  // Enter – paslepia klaviatūrą, kad matytųsi visi rezultatai
+  document.addEventListener('keydown', (e) => { if (e.target.id === 'q' && e.key === 'Enter') { e.preventDefault(); e.target.blur(); } });
+  // Pradėjus slinkti rezultatus – klaviatūra nusileidžia
+  $('sheetBody').addEventListener('touchmove', (e) => { const q = $('q'); if (q && document.activeElement === q && !e.target.closest('.search')) q.blur(); }, { passive: true });
+  // Klaviatūros aukštis (iOS ir Android klaviatūra mažina tik matomą sritį)
+  (function () {
+    const vv = window.visualViewport; if (!vv) return;
+    const app = document.querySelector('.app');
+    const upd = () => {
+      const kb = Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop));
+      app.style.setProperty('--kb', kb + 'px');
+      app.classList.toggle('kb', kb > 80);
+    };
+    vv.addEventListener('resize', upd); vv.addEventListener('scroll', upd); upd();
+  })();
 
   const STANDALONE = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
   if (STANDALONE) { state.installed = true; state.installShown = true; }
