@@ -179,6 +179,19 @@ body { margin: 0; overflow: hidden; background: #fff; }
 .loading #site { opacity: 0; }
 .skel i { display: block; background: linear-gradient(90deg, #e4e6e8 0, #eef0f1 40%, #e4e6e8 80%); background-size: 300% 100%; animation: shimmer 1.1s linear infinite; border-radius: 4px; }
 @keyframes shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+.skel .sk-row { display: flex; gap: 12px; align-items: center; }
+.skel .sk-col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.skel .sk-card { background: #fff; padding: 12px; display: flex; gap: 12px; align-items: flex-start; }
+.skel .sk-box { background: #fff; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+.skel .sk-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.skel .sk-grid i { height: 64px; }
+.app.dev-tablet .skel .sk-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.skel .sk-cards { display: flex; flex-direction: column; gap: 10px; }
+.app.c1 .skel, .app.c2 .skel { background: #fff; }
+.app.c2 .skel { background: #373737; }
+.app.c2 .skel .sk-card, .app.c2 .skel .sk-box { background: #2c2c2c; }
+.app.c2 .skel i { background: linear-gradient(90deg, #4a4a4a 0, #5a5a5a 40%, #4a4a4a 80%); background-size: 300% 100%; }
+@media (prefers-reduced-motion: reduce) { .skel i, .pph-tile.loading:before { animation: none !important; } }
 .sheet.dragging { transition: none; }
 .grip { width: 100%; height: 22px; margin: 0; background: none; position: relative; touch-action: none; cursor: grab; }
 .grip:after { content: ''; position: absolute; left: 50%; top: 9px; width: 40px; height: 4px; margin-left: -20px; border-radius: 2px; background: #d0d4d8; }
@@ -501,6 +514,18 @@ body { margin: 0; overflow: hidden; background: #fff; }
   const OFFLINE_SAVED = ['/', '/kontaktai', '/tvarkarasciai', '/tvarkarasciai/pamoku-tvarkarastis-2024-2025-m-m', '/tvarkarasciai/tvarkarasciu-pakeitimai', '/civiline-sauga', '/paslaugos/pagalba-mokiniams-ir-tevams/psichologines-ir-emocines-pagalbos-kontaktai', '/naujienos'];
   const isSaved = (p) => OFFLINE_SAVED.includes(p) || state.visited.has(p);
   let navDir = 'fwd';
+  // ---------- Skeleton ekranai: pagal puslapio tipą ----------
+  function skelFor(p) {
+    const L = (w, h) => `<i style="height:${h || 12}px;width:${w || 100}%"></i>`;
+    const card = () => `<div class="sk-card"><i style="width:110px;height:76px;flex-shrink:0"></i><div class="sk-col">${L(90, 14)}${L(70, 14)}${L(40, 10)}</div></div>`;
+    if (p === '/') return `<i style="height:170px"></i><div class="sk-grid">${'<i></i>'.repeat(6)}</div>${L(45, 22)}<div class="sk-cards">${card()}${card()}${card()}${card()}</div>`;
+    if (/^\/naujienos\/[^/]+\/\d{4}\/\d{2}\//.test(p)) return `${L(35, 12)}${L(90, 24)}${L(65, 24)}<i style="height:200px"></i><div class="sk-box">${L()}${L(96)}${L(92)}${L(60)}${L()}${L(88)}${L(94)}${L(40)}</div>`;
+    if (p.startsWith('/naujienos')) return `${L(50, 26)}<div class="sk-row"><i style="height:44px;flex:1"></i><i style="height:44px;width:120px"></i></div><div class="sk-cards">${card()}${card()}${card()}${card()}${card()}</div>`;
+    if (p.startsWith('/dokumentai')) { const r = () => `<div class="sk-row"><i style="width:22px;height:26px;flex-shrink:0"></i><div class="sk-col">${L(85, 13)}${L(35, 10)}</div></div>`; return `${L(45, 26)}<i style="height:48px"></i><i style="height:44px"></i><div class="sk-box"><i style="height:34px"></i>${r()}${r()}${r()}${r()}<i style="height:30px;width:60%"></i>${r()}${r()}</div>`; }
+    if (/kontaktai|struktura|administracija|specialistai|mokytojai/.test(p)) { const e = () => `<div class="sk-row"><i style="width:56px;height:56px;border-radius:50%;flex-shrink:0"></i><div class="sk-col">${L(60, 14)}${L(80, 11)}${L(45, 11)}</div></div>`; return `${L(30, 12)}${L(60, 26)}<div class="sk-box">${e()}${e()}${e()}${e()}${e()}</div>`; }
+    return `${L(30, 12)}${L(70, 26)}<div class="sk-box">${L()}${L(95)}${L(88)}${L(92)}${L(50)}<i style="height:140px"></i>${L()}${L(90)}${L(75)}</div>`;
+  }
+  let skelT = 0, skelTimer = 0;
   function go(p, opts) {
     opts = opts || {};
     if (!D.pages[p]) { toast('Šio puslapio prototipe nėra. Tikroje svetainėje jis atsidarytų.'); return; }
@@ -516,6 +541,7 @@ body { margin: 0; overflow: hidden; background: #fff; }
     if (state.offline && !isSaved(p)) { showOffpage(p); return; }
     hideOffpage();
     state.visited.add(p); state.navCount++;
+    $('skel').innerHTML = skelFor(p); skelT = performance.now(); clearTimeout(skelTimer);
     app.classList.add('loading');
     frame.srcdoc = buildDoc(p);
   }
@@ -529,12 +555,14 @@ body { margin: 0; overflow: hidden; background: #fff; }
   }
 
   frame.addEventListener('load', () => {
-    app.classList.remove('loading');
     const doc = frame.contentDocument, win = frame.contentWindow;
-    if (!doc || !doc.body) return;
+    if (!doc || !doc.body) { app.classList.remove('loading'); return; }
     applyA11y();
     decorate(doc);
-    frame.classList.remove('enter-fwd', 'enter-back'); void frame.offsetWidth; frame.classList.add(navDir === 'back' ? 'enter-back' : 'enter-fwd');
+    // Skeleton rodomas bent 350 ms – kad nemirgėtų, o lėtame ryšyje matytųsi iki galo
+    const reveal = () => { app.classList.remove('loading'); frame.classList.remove('enter-fwd', 'enter-back'); void frame.offsetWidth; frame.classList.add(navDir === 'back' ? 'enter-back' : 'enter-fwd'); };
+    const wait = Math.max(0, 350 - (performance.now() - skelT));
+    if (wait) skelTimer = setTimeout(reveal, wait); else reveal();
     if (navDir === 'back' && state.scroll[state.path]) win.scrollTo(0, state.scroll[state.path]);
     // Braukimas iš kairio krašto – atgal
     $('edge').style.display = state.path === '/' ? 'none' : 'block';
@@ -814,18 +842,43 @@ body { margin: 0; overflow: hidden; background: #fff; }
   .pst-actions button[hidden]{display:none}
   .pst-agree{margin:12px 0 0;display:flex;align-items:center;gap:8px;font-size:15px}
   .pst-photos{display:flex;flex-direction:column;gap:12px}
-  .pst-drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:140px;border:2px dashed #b9c2ca;background:#f7f8f9;color:#333;font-size:15px;text-align:center;cursor:pointer;padding:16px}
-  .pst-drop svg{color:#2e7d32}
-  .pst-drop small{color:#5f6368;font-size:13px}
-  .pst-thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-  .pst-thumbs img{width:100%;aspect-ratio:1;object-fit:cover;display:block}
+  .pph-hint{font-size:13px;color:#5f6368;line-height:1.45}
+  .pph-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+  .pph-grid.dragging{touch-action:none}
+  .pph-tile{position:relative;aspect-ratio:1;background:#eef0f2;overflow:hidden;outline:0;cursor:pointer}
+  .pph-tile img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .2s ease;pointer-events:none}
+  .pph-tile.sel{box-shadow:0 0 0 3px #2e7d32 inset}
+  .pph-tile.sel img{opacity:.9}
+  .pph-grid.dragging .pph-tile.sel{transform:scale(1.06);box-shadow:0 0 0 3px #2e7d32 inset,0 8px 18px rgba(0,0,0,.25);z-index:2}
+  .pph-tile.loading:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#e4e6e8 0,#f1f2f3 40%,#e4e6e8 80%);background-size:300% 100%;animation:pphShim 1.1s linear infinite}
+  @keyframes pphShim{from{background-position:100% 0}to{background-position:-100% 0}}
+  .pph-n{position:absolute;top:6px;left:6px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:rgba(0,0,0,.6);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .pph-cover{position:absolute;left:0;right:0;bottom:0;padding:4px 6px;background:#2e7d32;color:#fff;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;text-align:center}
+  .pph-prog{position:absolute;left:8px;right:8px;bottom:8px;height:4px;border-radius:2px;background:rgba(255,255,255,.6);overflow:hidden}
+  .pph-tile:first-child .pph-prog{bottom:28px}
+  .pph-prog span{display:block;height:100%;background:#2e7d32;transition:width .12s linear}
+  .pph-tile.up img{filter:brightness(.8)}
+  .pph-add{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:2px dashed #b9c2ca;background:#f7f8f9;color:#2e7d32;font:inherit;font-size:13px;font-weight:500;cursor:pointer;padding:6px;text-align:center}
+  .pph-grid.empty{grid-template-columns:1fr}
+  .pph-grid.empty .pph-add{aspect-ratio:auto;min-height:150px;font-size:16px}
+  .pph-add small{color:#5f6368;font-size:13px;font-weight:400}
+  .pph-tools{display:grid;grid-template-columns:44px 44px repeat(3,minmax(0,1fr));gap:6px}
+  .pph-tools[hidden]{display:none}
+  .pph-tools button{min-height:44px;min-width:44px;padding:0 12px;border:1px solid #cfd4da;background:#fff;color:#222;font:inherit;font-size:14px;cursor:pointer}
+  .pph-tools button:disabled{opacity:.4;cursor:default}
+  .pph-tools button[data-ph=left],.pph-tools button[data-ph=right]{font-size:22px;line-height:1;padding:0}
+  .pph-tools .del{color:#c62828;border-color:#e3b4b4}
+  .pph-tools button{padding:0 6px!important;white-space:nowrap}
+  .pph-status{font-size:13px;color:#5f6368;min-height:18px}
+  .pph-status.warn{color:#c62828;font-weight:500}
+  .acc-contrast-2-activated .pph-add,.acc-contrast-2-activated .pph-tools button{background:#373737;color:#fff;border-color:#fff}
+  .acc-contrast-2-activated .pph-hint,.acc-contrast-2-activated .pph-status{color:#fff}
   .pst-done{display:flex;flex-direction:column;align-items:flex-start;gap:10px;font-size:15px;line-height:1.5;color:#333}
   .pst-done b{font-size:20px;color:#1b5e20}
   .acc-contrast-2-activated .pst-t,.acc-contrast-2-activated .pst-n,.acc-contrast-2-activated .pst-help,.acc-contrast-2-activated .pst-done{color:#fff}
   .acc-contrast-2-activated .pst-actions{background:#373737;border-color:#fff}
   .acc-contrast-2-activated .pst-actions button{background:#fff;color:#373737;border-color:#fff}
   .acc-contrast-2-activated .pst-actions button.ghost{background:#373737;color:#fff}
-  .acc-contrast-2-activated .pst-drop{background:#373737;color:#fff;border-color:#fff}
   #proto-docs-tools{display:flex;flex-direction:column;gap:8px;padding:6px 0 12px;clear:both}
   .pdt-search{display:flex;align-items:center;gap:6px;height:48px;border:1px solid #cacaca;background:#fff;padding:0 4px 0 12px}
   .pdt-search:focus-within{border-color:#2e7d32;box-shadow:0 0 0 1px #2e7d32}
@@ -1299,12 +1352,77 @@ body { margin: 0; overflow: hidden; background: #fff; }
     form.prepend(top);
     // Žingsnis 4 (nuotraukos) ir patvirtinimas – svetainėje jie būna po išsaugojimo; prototipe parodome vietoje
     const w4 = doc.createElement('div'); w4.className = 'small-12 columns nopad step-wrap step-4'; w4.style.display = 'none';
-    w4.innerHTML = '<div class="pst-photos"><label class="pst-drop"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h3l2-3h6l2 3h3v13H4zM12 10a4 4 0 100 8 4 4 0 000-8z"/></svg><span><b>Pasirinkti nuotraukas</b></span><small>Iš galerijos arba nufotografuokite dabar. Galima kelias.</small><input type="file" accept="image/*" multiple hidden></label><div class="pst-thumbs"></div></div>';
+    w4.innerHTML = '<div class="pst-photos"><div class="pph-hint">Pirmoji nuotrauka bus straipsnio pagrindinė. Pažymėkite nuotrauką, kad ją perkeltumėte, pasuktumėte ar pašalintumėte. Tvarką keisti galima ir palaikius bei pavilkus.</div>'
+      + '<div class="pph-grid" role="list"></div>'
+      + '<div class="pph-tools" hidden role="toolbar" aria-label="Nuotraukos veiksmai"><button type="button" data-ph="left" aria-label="Perkelti anksčiau">‹</button><button type="button" data-ph="right" aria-label="Perkelti vėliau">›</button><button type="button" data-ph="rot">↻ Pasukti</button><button type="button" data-ph="cover">Pagrindinė</button><button type="button" data-ph="del" class="del">Šalinti</button></div>'
+      + '<div class="pph-status" role="status" aria-live="polite"></div>'
+      + '<input type="file" accept="image/*" multiple hidden></div>';
     const w5 = doc.createElement('div'); w5.className = 'small-12 columns nopad step-wrap step-5'; w5.style.display = 'none';
     w5.innerHTML = '<div class="pst-done" role="status"><b>Ačiū! Naujiena išsiųsta</b><span>Svetainės administratorius peržiūrės ir paskelbs. Prototipe forma niekur nesiunčiama.</span></div>';
     wraps[wraps.length - 1].after(w4); w4.after(w5);
-    const fileIn = w4.querySelector('input[type=file]'), thumbs = w4.querySelector('.pst-thumbs');
-    fileIn.addEventListener('change', () => { thumbs.innerHTML = ''; [...fileIn.files].slice(0, 12).forEach(f => { const im = doc.createElement('img'); im.alt = ''; im.src = URL.createObjectURL(f); thumbs.appendChild(im); }); });
+    const fileIn = w4.querySelector('input[type=file]'), grid = w4.querySelector('.pph-grid'), tools = w4.querySelector('.pph-tools'), pst = w4.querySelector('.pph-status');
+    const PH = []; let sel = -1, uid = 0;
+    const camIc = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h3l2-3h6l2 3h3v13H4zM12 10a4 4 0 100 8 4 4 0 000-8z"/></svg>';
+    const render = () => {
+      grid.innerHTML = PH.map((ph, i) => {
+        const r = ph.rot % 360, side = r === 90 || r === 270;
+        return `<div class="pph-tile ${ph.st}${i === sel ? ' sel' : ''}" role="listitem" data-i="${i}" tabindex="0" aria-label="Nuotrauka ${i + 1}${i === 0 ? ', pagrindinė' : ''}${ph.st === 'up' ? ', įkeliama' : ''}">`
+          + (ph.url ? `<img src="${ph.url}" alt="" style="transform:rotate(${ph.rot}deg)${side ? ' scale(.75)' : ''}" draggable="false">` : '')
+          + `<span class="pph-n">${i + 1}</span>${i === 0 ? '<span class="pph-cover">Pagrindinė</span>' : ''}`
+          + (ph.st === 'up' ? `<span class="pph-prog"><span style="width:${ph.p}%"></span></span>` : '') + '</div>';
+      }).join('') + `<button type="button" class="pph-add">${camIc}<span>${PH.length ? 'Pridėti' : 'Pasirinkti nuotraukas'}</span>${PH.length ? '' : '<small>Iš galerijos arba nufotografuokite</small>'}</button>`;
+      grid.classList.toggle('empty', !PH.length);
+      tools.hidden = sel < 0;
+      if (sel >= 0) { tools.querySelector('[data-ph=left]').disabled = sel === 0; tools.querySelector('[data-ph=right]').disabled = sel === PH.length - 1; tools.querySelector('[data-ph=cover]').disabled = sel === 0; }
+      const up = PH.filter(x => x.st !== 'done').length;
+      pst.textContent = PH.length ? (up ? `Įkeliama… ${PH.length - up} iš ${PH.length}` : `Įkelta nuotraukų: ${PH.length}`) : '';
+    };
+    const upload = (ph) => { ph.st = 'up'; ph.p = 0; const step = () => { ph.p = Math.min(100, ph.p + 8 + Math.random() * 14); if (ph.p >= 100) { ph.st = 'done'; } else setTimeout(step, 120); render(); }; setTimeout(step, 150); };
+    fileIn.addEventListener('change', () => {
+      [...fileIn.files].slice(0, 20).forEach(f => {
+        const ph = { id: ++uid, url: '', rot: 0, st: 'loading', p: 0 }; PH.push(ph);
+        // Skeleton plytelė, kol nuotrauka nuskaitoma (didelės nuotraukos telefone – keli šimtai ms)
+        const u = URL.createObjectURL(f); const im = new Image();
+        im.onload = () => setTimeout(() => { ph.url = u; upload(ph); render(); }, 250 + Math.random() * 500);
+        im.onerror = () => { PH.splice(PH.indexOf(ph), 1); render(); };
+        im.src = u;
+      });
+      fileIn.value = ''; render();
+    });
+    const move = (from, to) => { if (to < 0 || to >= PH.length || from === to) return; const [x] = PH.splice(from, 1); PH.splice(to, 0, x); sel = to; render(); };
+    grid.addEventListener('click', (e) => {
+      if (e.target.closest('.pph-add')) { fileIn.click(); return; }
+      const t = e.target.closest('.pph-tile'); if (!t || dragged) return;
+      const i = +t.dataset.i; sel = sel === i ? -1 : i; render();
+    });
+    tools.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-ph]'); if (!b || sel < 0) return;
+      const k = b.dataset.ph;
+      if (k === 'left') move(sel, sel - 1);
+      else if (k === 'right') move(sel, sel + 1);
+      else if (k === 'cover') move(sel, 0);
+      else if (k === 'rot') { PH[sel].rot += 90; render(); }
+      else if (k === 'del') { PH.splice(sel, 1); sel = -1; render(); }
+    });
+    // Palaikius ir pavilkus – keisti tvarką
+    let dragI = -1, hold = 0, dragged = false;
+    grid.addEventListener('pointerdown', (e) => {
+      const t = e.target.closest('.pph-tile'); if (!t) return;
+      dragged = false; const i = +t.dataset.i;
+      hold = setTimeout(() => { dragI = i; sel = i; render(); grid.classList.add('dragging'); try { grid.setPointerCapture(e.pointerId); } catch (x) {} }, 320);
+    });
+    grid.addEventListener('pointermove', (e) => {
+      if (dragI < 0) { return; }
+      e.preventDefault();
+      const el = doc.elementFromPoint(e.clientX, e.clientY); const t = el && el.closest('.pph-tile');
+      if (t && +t.dataset.i !== dragI) { dragged = true; const to = +t.dataset.i; move(dragI, to); dragI = to; }
+    });
+    const endDrag = () => { clearTimeout(hold); if (dragI >= 0) { dragI = -1; grid.classList.remove('dragging'); setTimeout(() => { dragged = false; }, 50); } };
+    grid.addEventListener('pointerup', endDrag); grid.addEventListener('pointercancel', endDrag);
+    grid.addEventListener('touchmove', (e) => { if (dragI >= 0) e.preventDefault(); }, { passive: false });
+    grid.addEventListener('contextmenu', (e) => e.preventDefault());
+    render();
+    w4.pphBusy = () => PH.some(x => x.st !== 'done');
     // Sutikimas su taisyklėmis – matomas virš mygtukų
     const agree = form.querySelector('.step-agreement'); if (agree) { agree.classList.add('pst-agree'); wraps[2] && wraps[2].appendChild(agree); }
     const bar = doc.createElement('div'); bar.className = 'pst-actions';
@@ -1347,6 +1465,7 @@ body { margin: 0; overflow: hidden; background: #fff; }
     form.addEventListener('change', (e) => { if (e.target.name === 'naujiena_category') { const c = form.querySelector('.step-categories-title'); c && c.classList.remove('pst-err'); } if (e.target.id === 'step-check') { const a = e.target.closest('.step-agreement'); a.classList.remove('pst-err'); const m = a.querySelector('.pst-msg'); m && m.remove(); } });
     bNext.addEventListener('click', () => {
       if (cur > 3) { go('/naujienos'); return; }
+      if (cur === 3 && w4.pphBusy && w4.pphBusy()) { const st = w4.querySelector('.pph-status'); st.textContent = 'Palaukite, kol įsikels visos nuotraukos'; st.classList.add('warn'); setTimeout(() => st.classList.remove('warn'), 1600); return; }
       if (!valid()) return;
       show(cur + 1, true);
     });
