@@ -193,6 +193,12 @@ body { margin: 0; overflow: hidden; background: #fff; }
 .app.c2 .skel i { background: linear-gradient(90deg, #4a4a4a 0, #5a5a5a 40%, #4a4a4a 80%); background-size: 300% 100%; }
 @media (prefers-reduced-motion: reduce) { .skel i, .pph-tile.loading:before { animation: none !important; } }
 .sheet.dragging { transition: none; }
+.sdots { display: flex; justify-content: center; gap: 6px; margin-top: -6px; height: 8px; flex-shrink: 0; }
+.sdots[hidden] { display: none; }
+.sdots i { width: 6px; height: 6px; border-radius: 50%; background: #d0d4d8; transition: background .2s, width .2s; }
+.sdots i.on { width: 16px; border-radius: 3px; background: #2e7d32; }
+.app.c2 .sdots i.on { background: #fff; }
+@media (min-width: 641px) { .sdots { display: none; } }
 .grip { width: 100%; height: 22px; margin: 0; background: none; position: relative; touch-action: none; cursor: grab; }
 .grip:after { content: ''; position: absolute; left: 50%; top: 9px; width: 40px; height: 4px; margin-left: -20px; border-radius: 2px; background: #d0d4d8; }
 .sh { touch-action: none; }
@@ -514,7 +520,7 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
       <div class="edge" id="edge" aria-hidden="true"></div>
       <div class="shade" id="shade"></div>
       <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
-        <div class="grip" aria-hidden="true"></div>
+        <div class="grip" aria-hidden="true"></div><div class="sdots" id="sdots" aria-hidden="true"><i></i><i></i><i></i></div>
         <div class="sh"><b id="sheetTitle"></b><button class="sh-gear" id="sheetGear" aria-label="Nustatymai" title="Nustatymai" hidden><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></button><button class="x" id="sheetClose" aria-label="Uždaryti">×</button></div>
         <div class="sb" id="sheetBody"></div>
       </section>
@@ -2222,22 +2228,49 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
       if (!e.target.closest('.grip, .sh') || e.target.closest('.x')) return;
       y0 = e.clientY; dy = 0; sh.classList.add('dragging');
     });
-    // Liečiant: nuo viršaus visada, nuo turinio – kai jis paslinktas iki viršaus
+    // Liečiant: žemyn – uždaryti (nuo viršaus visada, nuo turinio – kai paslinktas iki viršaus);
+    // į šonus – pereiti tarp apatinės juostos lapų Greičiau ↔ Paieška ↔ Meniu
+    const ORDER = ['quick', 'search', 'menu'];
+    let tx0 = 0, axis = '', dx = 0, canDown = false;
+    const sb = $('sheetBody'), st = $('sheetTitle');
+    const moveH = (x) => { const k = ORDER.indexOf(state.sheet); const edge = (x > 0 && k === 0) || (x < 0 && k === ORDER.length - 1); const v = edge ? x * 0.3 : x; [sb, st].forEach(el => { el.style.transform = v ? 'translateX(' + v + 'px)' : ''; el.style.opacity = v ? String(Math.max(.35, 1 - Math.abs(v) / 400)) : ''; }); };
     sh.addEventListener('touchstart', (e) => {
-      onTop = !!e.target.closest('.grip, .sh') && !e.target.closest('.x');
-      const sb = $('sheetBody');
-      if (!onTop && sb.scrollTop > 0) { ty0 = null; return; }
-      ty0 = e.touches[0].clientY; dy = 0;
+      onTop = !!e.target.closest('.grip, .sh') && !e.target.closest('.x, .sh-gear');
+      canDown = onTop || sb.scrollTop <= 0;
+      ty0 = e.touches[0].clientY; tx0 = e.touches[0].clientX; dy = 0; dx = 0; axis = '';
+      if (e.target.closest('input, textarea')) axis = 'none';
     }, { passive: true });
     sh.addEventListener('touchmove', (e) => {
-      if (ty0 === null) return;
-      const d = e.touches[0].clientY - ty0;
-      if (d <= 0 && !sh.classList.contains('dragging')) { ty0 = null; return; }
+      if (ty0 === null || axis === 'none') return;
+      const ddy = e.touches[0].clientY - ty0, ddx = e.touches[0].clientX - tx0;
+      if (!axis) {
+        if (Math.abs(ddx) < 8 && Math.abs(ddy) < 8) return;
+        axis = Math.abs(ddx) > Math.abs(ddy) * 1.2 && ORDER.includes(state.sheet) && !matchMedia('(min-width: 641px)').matches ? 'h' : 'v';
+        if (axis === 'v' && (!canDown || ddy <= 0)) { axis = 'none'; return; }
+        if (axis === 'h') [sb, st].forEach(el => { el.style.transition = 'none'; });
+      }
       e.preventDefault();
-      sh.classList.add('dragging'); dy = Math.max(0, d); sh.style.transform = 'translateY(' + dy + 'px)';
+      if (axis === 'h') { dx = ddx; moveH(dx); return; }
+      sh.classList.add('dragging'); dy = Math.max(0, ddy); sh.style.transform = 'translateY(' + dy + 'px)';
     }, { passive: false });
     sh.addEventListener('touchend', () => {
       if (ty0 === null) return; ty0 = null;
+      if (axis === 'h') {
+        const k = ORDER.indexOf(state.sheet), to = dx < -70 ? k + 1 : dx > 70 ? k - 1 : k;
+        [sb, st].forEach(el => { el.style.transition = 'transform .2s ease, opacity .2s ease'; });
+        if (to !== k && to >= 0 && to < ORDER.length) {
+          const dir = dx < 0 ? -1 : 1;
+          [sb, st].forEach(el => { el.style.transform = 'translateX(' + (dir * 120) + 'px)'; el.style.opacity = '0'; });
+          setTimeout(() => {
+            switchSheet(ORDER[to]);
+            [sb, st].forEach(el => { el.style.transition = 'none'; el.style.transform = 'translateX(' + (-dir * 60) + 'px)'; el.style.opacity = '0'; });
+            void sb.offsetWidth;
+            [sb, st].forEach(el => { el.style.transition = 'transform .22s cubic-bezier(.2,.8,.2,1), opacity .22s ease'; el.style.transform = ''; el.style.opacity = ''; });
+          }, 160);
+        } else moveH(0);
+        axis = ''; return;
+      }
+      axis = '';
       sh.classList.remove('dragging'); sh.style.transform = '';
       if (dy > 90) closeSheet();
     });
@@ -2245,7 +2278,7 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
     window.addEventListener('pointerup', () => { if (y0 === null) return; sh.classList.remove('dragging'); sh.style.transform = ''; if (dy > 90) closeSheet(); y0 = null; });
   })();
 
-  function openSheet(k) {
+  function openSheet(k, o) {
     if (state.sheet === k) { closeSheet(); return; }
     state.sheet = k;
     $('sheetTitle').textContent = SHEETS[k][0];
@@ -2254,7 +2287,13 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
     $('sheet').classList.toggle('full', k === 'search' || k === 'quick' || k === 'menu'); // apatinės juostos lapai – vienodo aukščio
     $('sheet').classList.add('on'); $('shade').classList.add('on');
     renderTabs();
-    if (k === 'search') { runSearch(); setTimeout(() => { const q = $('q'); q && q.focus(); }, 320); }
+    if (k === 'search') { runSearch(); if (!(o && o.nofocus)) setTimeout(() => { const q = $('q'); q && q.focus(); }, 320); }
+    renderDots();
+  }
+  function renderDots() { const ix = ['quick', 'search', 'menu'].indexOf(state.sheet); const d = $('sdots'); d.hidden = ix < 0; [...d.children].forEach((x, i) => x.classList.toggle('on', i === ix)); }
+  function switchSheet(k) {
+    state.sheet = null; openSheet(k, { nofocus: true });
+    $('sheetBody').scrollTop = 0;
   }
   function refreshSheet() { if (state.sheet) { const y = $('sheetBody').scrollTop; $('sheetBody').innerHTML = SHEETS[state.sheet][1](); $('sheetBody').scrollTop = y; } }
   function closeSheet(silent) {
