@@ -97,7 +97,7 @@ body { margin: 0; overflow: hidden; background: #fff; }
 .app.kb .tabs { visibility: hidden; }
 .grip { width: 40px; height: 4px; border-radius: 2px; background: #d0d4d8; margin: 10px auto 0; flex-shrink: 0; }
 .sh { display: flex; align-items: center; justify-content: space-between; padding: 6px 16px 8px; flex-shrink: 0; }
-.sh b { font-size: 18px; }
+.sh b { font-size: 18px; font-weight: 500; }
 .x { width: 44px; height: 44px; border: 0; border-radius: 50%; background: #f1f3f5; color: #333; font-size: 22px; cursor: pointer; }
 .sb { overflow-y: auto; padding: 0 16px 18px; display: flex; flex-direction: column; gap: 12px; overscroll-behavior: contain; }
 
@@ -127,7 +127,7 @@ body { margin: 0; overflow: hidden; background: #fff; }
 .app.c2 .dct-i { color: #fff; border-color: #666; } .app.c2 .dct-i.on { background: #1c1c1c; color: #fff; box-shadow: inset 3px 0 0 #fff; }
 .arch { display: flex; flex-direction: column; gap: 18px; }
 .arch-y { display: flex; flex-direction: column; gap: 8px; }
-.arch-yh { display: flex; align-items: center; justify-content: space-between; min-height: 40px; padding: 0; border: 0; border-bottom: 1px solid #e3e4e6; background: none; color: #222; font: inherit; font-size: 17px; font-weight: 700; text-align: left; cursor: pointer; }
+.arch-yh { display: flex; align-items: center; justify-content: space-between; min-height: 40px; padding: 0; border: 0; border-bottom: 1px solid #e3e4e6; background: none; color: #222; font: inherit; font-size: 17px; font-weight: 500; text-align: left; cursor: pointer; }
 .arch-yh.on { color: #2e7d32; }
 .chip small { color: #6b6b6b; font-size: 12px; margin-left: 2px; }
 .chip.on { background: #2e7d32; border-color: #2e7d32; color: #fff; }
@@ -208,7 +208,7 @@ body { margin: 0; overflow: hidden; background: #fff; }
 /* Mano klasė */
 .me { border: 1px solid #cfe5d0; background: #f4faf4; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
 .me-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.me-h b { font-size: 16px; color: #1b5e20; }
+.me-h b { font-size: 16px; font-weight: 500; color: #1b5e20; }
 .me-h button { border: 0; background: none; color: #2e7d32; font-size: 14px; text-decoration: underline; cursor: pointer; min-height: 36px; }
 .me-roles { display: flex; gap: 6px; flex-wrap: wrap; }
 .me-roles button { min-height: 40px; padding: 0 14px; border-radius: 20px; border: 1px solid #2e7d32; background: #fff; color: #2e7d32; font-size: 14px; cursor: pointer; }
@@ -389,7 +389,7 @@ body { margin: 0; overflow: hidden; background: #fff; }
 .set.on { transform: none; visibility: visible; transition: transform .3s cubic-bezier(.2,.8,.2,1); }
 .set-h { display: flex; align-items: center; gap: 4px; min-height: 56px; padding: env(safe-area-inset-top, 0px) 12px 0 4px; background: #fff; border-bottom: 1px solid #e3e4e6; flex-shrink: 0; }
 .set-h button { display: flex; align-items: center; gap: 2px; min-height: 44px; padding: 0 8px; border: 0; background: none; color: #2e7d32; font: inherit; font-size: 16px; font-weight: 500; cursor: pointer; }
-.set-h b { font-size: 18px; margin-left: 4px; }
+.set-h b { font-size: 18px; font-weight: 500; margin-left: 4px; }
 .set-b { flex: 1; min-height: 0; overflow-y: auto; padding: 8px 16px calc(24px + env(safe-area-inset-bottom, 0px)); }
 .set-in { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 6px; }
 .sg { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: #5f6368; margin: 14px 4px 4px; }
@@ -422,6 +422,7 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
 .sdanger { color: #c62828 !important; }
 .set-entry { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 8px 12px; border: 1px solid #e3e4e6; background: #f7f8f9; font: inherit; color: #222; text-align: left; cursor: pointer; }
 .set-entry svg { color: #2e7d32; flex-shrink: 0; }
+.set-entry b { font-weight: 500; }
 .set-entry span { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .set-entry small { font-size: 13px; color: #6b7076; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sh-gear { width: 44px; height: 44px; border: 0; border-radius: 50%; background: #f1f3f5; color: #333; cursor: pointer; display: flex; align-items: center; justify-content: center; margin-left: auto; margin-right: 8px; }
@@ -444,7 +445,7 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
 .auth-b { flex: 1; min-height: 0; overflow-y: auto; padding: 4px 24px calc(24px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; align-items: center; }
 .auth-in { width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 14px; flex: 1; }
 .auth-ic { width: 64px; height: 64px; border-radius: 50%; background: #e8f3e9; color: #2e7d32; display: flex; align-items: center; justify-content: center; align-self: center; margin-top: 8px; }
-.auth h2 { margin: 0; font-size: 22px; line-height: 1.25; text-align: center; color: #1d1d1d; text-wrap: balance; }
+.auth h2 { margin: 0; font-size: 22px; font-weight: 500; line-height: 1.25; text-align: center; color: #1d1d1d; text-wrap: balance; }
 .auth p { margin: 0; font-size: 15px; line-height: 1.5; color: #4a4f55; text-align: center; }
 .auth .who { font-size: 14px; color: #5f6368; text-align: center; }
 .auth label.fld { display: flex; flex-direction: column; gap: 6px; font-size: 14px; font-weight: 500; color: #333; margin-top: 6px; }
@@ -459,7 +460,7 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
 .auth .aopt { display: flex; align-items: center; gap: 14px; width: 100%; padding: 14px; border: 1px solid #d5dade; background: #fff; text-align: left; font: inherit; color: #222; cursor: pointer; }
 .auth .aopt:active { background: #f3f5f6; }
 .auth .aopt svg { color: #2e7d32; flex-shrink: 0; }
-.auth .aopt b { display: block; font-size: 16px; }
+.auth .aopt b { display: block; font-size: 16px; font-weight: 500; }
 .auth .aopt small { display: block; font-size: 13px; color: #5f6368; margin-top: 2px; }
 .auth .aopt .tag { margin-left: auto; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; color: #2e7d32; background: #e8f3e9; padding: 3px 6px; align-self: flex-start; }
 .auth .mail { border: 1px solid #e3e4e6; background: #fafbfb; padding: 14px; display: flex; flex-direction: column; gap: 8px; text-align: left; }
@@ -1215,12 +1216,16 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
   #page-font-size{display:none!important}
   /* Antraštės telefone – kompaktiškos */
   @media (max-width:640px){
-    .content-main-title,.content-main-title h1,.content-main-title span{font-size:22px!important;line-height:1.25!important;margin:2px 0 10px!important;padding:0!important;text-wrap:balance}
+    .content-main-title,.content-main-title h1,.content-main-title span{font-size:24px!important;font-weight:500!important;line-height:1.25!important;margin:2px 0 10px!important;padding:0!important;text-wrap:balance}
     .content-main{padding-top:6px!important}
-    .content-school h1,.content-school h2,.entry h2{font-size:20px!important;line-height:1.3!important;margin:16px 0 10px!important}
+    .content-school h1,.content-school h2,.entry h2{font-size:20px!important;font-weight:500!important;line-height:1.3!important;margin:16px 0 10px!important}
     .content-school>h1:first-child,.content-school>h2:first-child{margin-top:0!important}
-    .content-school h3,.entry h3{font-size:18px!important;line-height:1.3!important;margin:16px 0 8px!important}
-    .content-school h4,.entry h4{font-size:16px!important;margin:14px 0 6px!important}
+    .content-school h3,.entry h3{font-size:17px!important;font-weight:500!important;line-height:1.35!important;margin:16px 0 8px!important}
+    .content-school h4,.entry h4{font-size:16px!important;font-weight:500!important;line-height:1.35!important;margin:14px 0 6px!important}
+    /* Kortelių antraštės: naujienos, darbuotojai */
+    .news-title a,.news-item .news-title a,.news-flat-item .news-title a{font-size:16px!important;font-weight:500!important;line-height:1.3!important}
+    .employee-name{font-size:17px!important;font-weight:500!important;line-height:1.3!important}
+    .pf summary,.pf-groups summary{font-weight:500!important}
     .content-school{padding:16px!important}
   }
   /* Lentelės kortelėmis */
@@ -1295,7 +1300,7 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
   .pst-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
   .pst-bar i{height:4px;border-radius:2px;background:#dfe2e5}
   .pst-bar i.on{background:#2e7d32}
-  .pst-t{font-size:20px;font-weight:700;color:#222;line-height:1.25}
+  .pst-t{font-size:20px;font-weight:500;color:#222;line-height:1.25}
   .proto-stepper .steps{display:none!important}
   .proto-stepper .step-next,.proto-stepper .step-back{display:none!important}
   .proto-stepper .has-tip{display:none!important}
@@ -1352,7 +1357,7 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
   .acc-contrast-2-activated .pph-add,.acc-contrast-2-activated .pph-tools button{background:#373737;color:#fff;border-color:#fff}
   .acc-contrast-2-activated .pph-hint,.acc-contrast-2-activated .pph-status{color:#fff}
   .pst-done{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;font-size:15px;line-height:1.5;color:#333;padding:8px 0 4px}
-  .pst-done>b{font-size:22px;color:#1b5e20;outline:0}
+  .pst-done>b{font-size:22px;font-weight:500;color:#1b5e20;outline:0}
   .pd-check circle{stroke:#2e7d32;stroke-width:3;stroke-dasharray:151;stroke-dashoffset:151;animation:pdDraw .5s ease-out forwards}
   .pd-check path{stroke:#2e7d32;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:36;stroke-dashoffset:36;animation:pdDraw .35s .45s ease-out forwards}
   .pd-check{animation:pdPop .5s .7s ease-out}
@@ -1360,7 +1365,7 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
   @keyframes pdPop{50%{transform:scale(1.08)}}
   .pd-card{width:100%;display:flex;gap:12px;align-items:center;text-align:left;padding:10px;border:1px solid #e3e4e6;background:#fafbfb}
   .pd-card img,.pd-noimg{width:64px;height:64px;object-fit:cover;flex-shrink:0;display:block;background:#e4e6e8}
-  .pd-card strong{display:block;font-size:16px;line-height:1.3;color:#222}
+  .pd-card strong{display:block;font-size:16px;font-weight:500;line-height:1.3;color:#222}
   .pd-card small{display:block;font-size:13px;color:#5f6368;margin-top:2px}
   .pd-steps{list-style:none;margin:4px 0 0!important;padding:0!important;width:100%;display:flex;flex-direction:column;gap:0;text-align:left}
   .pd-steps li{position:relative;padding:0 0 14px 30px!important;margin:0!important;font-size:15px;color:#777}
@@ -1523,7 +1528,14 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
   /* baneriai – dviem stulpeliais */
   .proto-banners{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%;float:none!important;clear:both;margin:10px 0}
   .proto-banners .side-banner{width:auto!important;float:none!important;margin:0!important;padding:0!important}
-  .proto-banners .side-banner img{width:100%!important;height:auto!important;display:block;max-width:100%}`;
+  .proto-banners .side-banner img{width:100%!important;height:auto!important;display:block;max-width:100%}
+  /* Planšetė: ta pati skalė, vienu laipteliu didesnė */
+  @media (min-width:641px) and (max-width:1024px){
+    .content-main-title,.content-main-title h1,.content-main-title span{font-size:28px!important;font-weight:500!important;line-height:1.2!important}
+    .content-school h2,.entry h2{font-size:22px!important;font-weight:500!important}
+    .content-school h3,.entry h3{font-size:18px!important;font-weight:500!important}
+    .news-title a{font-weight:500!important}
+  }`;
 
   // Pamokų laikas: telefone – paspaudžiamas, su dabartine būsena (ne hover)
   function rebuildLessons(doc) {
