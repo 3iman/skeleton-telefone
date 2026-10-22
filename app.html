@@ -337,7 +337,16 @@ body { margin: 0; overflow: hidden; background: #fff; }
 .app.c1 .tab.on { color: #373737; box-shadow: inset 0 3px 0 #373737; }
 .app.c1 .back svg, .app.c1 .mrow svg, .app.c1 .qitem svg, .app.c1 .search svg { stroke: #373737; }
 .app.c1 .pill { border-color: #373737; color: #373737; }
-.app.c1 .qitem { background: #fff; border: 1px solid #373737; color: #373737; }
+.app.c1 .qitem { background: #efefef; border: 0; color: #373737; }
+.app.c1 .me, .app.c1 .me-change { border-width: 1px; }
+.app.c1 .sw2[aria-checked="true"], .app.c1 .seg button[aria-pressed="true"], .app.c1 .scls button[aria-pressed="true"], .app.c1 .sdots i.on, .app.c1 .install-a button.solid, .app.c1 .pph-cover, .app.c1 .chip.on, .app.c1 .auth .btn, .app.c1 .big-btn { background: #373737; border-color: #373737; color: #fff; }
+.app.c1 .seg { border-color: #373737; } .app.c1 .seg button { border-color: #373737; color: #373737; }
+.app.c1 .srow > svg, .app.c1 .set-entry svg, .app.c1 .set-h button, .app.c1 .sh-gear, .app.c1 .dct-i.on, .app.c1 .arch-yh.on, .app.c1 .auth-ic, .app.c1 .auth .link, .app.c1 .auth .aopt svg, .app.c1 .staff svg, .app.c1 .staff-key button { color: #373737; stroke: currentColor; }
+.app.c1 .dct-i.on { background: #efefef; box-shadow: inset 3px 0 0 #373737; }
+.app.c1 .me-roles button, .app.c1 .me-classes button { border-color: #373737; color: #373737; background: #fff; }
+.app.c1 .me-roles button[aria-pressed="true"] { background: #373737; color: #fff; }
+.app.c1 .auth-ic { background: #efefef; }
+.app.c1 .auth .btn.ghost, .app.c1 .pd-notify { background: #fff; color: #373737; border-color: #373737; }
 .app.c1 .blacknav { background: #373737; }
 .app.c1 .mgroup { background: #fff; border: 1px solid #373737; }
 .app.c1 .mitem, .app.c1 .msub, .app.c1 .mrow, .app.c1 .mlist, .app.c1 .result { border-color: #373737; }
@@ -1510,7 +1519,10 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
     .proto-banners{grid-template-columns:repeat(3,minmax(0,1fr))}
   }
   /* kontrasto režimai – papildyti elementai */
-  .acc-contrast-1-activated .news-item,.acc-contrast-1-activated .news-flat-item{box-shadow:none;border:1px solid #373737}
+  /* Kontrastas „juodai ant balto“: viena linija aplink kortelę, be rėmelių aplink apvalkalus ir kortelių vidų */
+  .acc-contrast-1-activated .add-shadow,.acc-contrast-1-activated .news-flat-block,.acc-contrast-1-activated .news-list>ul>li,.acc-contrast-1-activated .news-item-content,.acc-contrast-1-activated .news-flat-img-block,.acc-contrast-1-activated .news-item .news-more{border:0!important;box-shadow:none!important}
+  .acc-contrast-1-activated .news-item,.acc-contrast-1-activated .news-flat-item{box-shadow:none!important;border:1px solid #373737!important}
+  .acc-contrast-1-activated .content-school.add-shadow{padding-left:0!important;padding-right:0!important}
   .acc-contrast-1-activated .proto-lessons{box-shadow:none;border:1px solid #373737}
   .acc-contrast-1-activated .proto-lessons>button,.acc-contrast-1-activated .proto-lessons li{color:#373737}
   .acc-contrast-1-activated .proto-lessons>button i.far{color:#373737}
