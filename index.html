@@ -67,6 +67,7 @@ body { background: var(--bg); color: var(--fg); font-family: var(--font); }
     <button class="ctl" data-cmd="install">Rodyti diegimo pasiūlymą <i>›</i></button>
     <button class="ctl" data-cmd="push">Atsiųsti pranešimą <i>›</i></button>
     <button class="ctl" data-cmd="offline">Be ryšio <i data-st="offline">išjungta</i></button>
+    <button class="ctl" data-cmd="text2">Straipsnio tekstas <i data-st="text2">pagerintas</i></button>
     <div class="label">Autoriaus raktas</div>
     <button class="ctl" data-cmd="keylock">Baigti sesiją (prašys PIN) <i>›</i></button>
     <button class="ctl" data-cmd="keyreset">Pamiršti raktą <i>›</i></button>
@@ -100,7 +101,7 @@ body { background: var(--bg); color: var(--fg); font-family: var(--font); }
   }
   window.addEventListener('resize', fit); fit();
   document.getElementById('orient').addEventListener('click', () => { land = !land; fit(); });
-  const st = { footer: true, info: false, alert: false, offline: false };
+  const st = { footer: true, info: false, alert: false, offline: false, text2: true };
   document.querySelector('.note').addEventListener('click', (e) => {
     const b = e.target.closest('[data-cmd]'); if (!b) return;
     const c = b.dataset.cmd;
@@ -108,7 +109,7 @@ body { background: var(--bg); color: var(--fg); font-family: var(--font); }
     if (c in st) {
       st[c] = !st[c];
       const el = document.querySelector('[data-st="' + c + '"]');
-      if (el) el.textContent = c === 'footer' ? (st[c] ? 'šviesus' : 'tamsus') : (st[c] ? 'įjungta' : 'išjungta');
+      if (el) el.textContent = c === 'footer' ? (st[c] ? 'šviesus' : 'tamsus') : c === 'text2' ? (st[c] ? 'pagerintas' : 'dabartinis') : (st[c] ? 'įjungta' : 'išjungta');
     }
   });
 })();

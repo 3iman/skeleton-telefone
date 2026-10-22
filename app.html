@@ -975,6 +975,13 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
     return api;
   })();
 
+  // Straipsnio teksto variantas: įsimenamas šiame įrenginyje
+  try { state.text2 = localStorage.getItem('sk-text2') !== '0'; } catch (e) { state.text2 = true; }
+  function setText2(on) {
+    state.text2 = on; try { localStorage.setItem('sk-text2', on ? '1' : '0'); } catch (e) {}
+    try { frame.contentDocument.body.classList.toggle('proto-text2', on); } catch (e) {}
+    toast('Straipsnio tekstas: ' + (on ? 'pagerintas (16 px, #333, 1,6)' : 'dabartinis (14 px, #5f5f5f)'));
+  }
   // ---------- Skeleton ekranai: pagal puslapio tipą ----------
   function skelFor(p) {
     const L = (w, h) => `<i style="height:${h || 12}px;width:${w || 100}%"></i>`;
@@ -1529,6 +1536,13 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
   .proto-banners{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%;float:none!important;clear:both;margin:10px 0}
   .proto-banners .side-banner{width:auto!important;float:none!important;margin:0!important;padding:0!important}
   .proto-banners .side-banner img{width:100%!important;height:auto!important;display:block;max-width:100%}
+  /* Straipsnio tekstas – pagerintas variantas (jungiklis demo valdikliuose) */
+  body.proto-text2 .entry p,body.proto-text2 .entry li,body.proto-text2 .article-block p,body.proto-text2 .content-school p,body.proto-text2 .content-school li{font-size:16px!important;line-height:1.6!important;margin-bottom:16px;hyphens:auto;-webkit-hyphens:auto;overflow-wrap:break-word}
+  body.proto-text2 .entry li,body.proto-text2 .content-school li{margin-bottom:6px}
+  body.proto-text2:not(.acc-contrast-1-activated):not(.acc-contrast-2-activated) .entry p,body.proto-text2:not(.acc-contrast-1-activated):not(.acc-contrast-2-activated) .entry li,body.proto-text2:not(.acc-contrast-1-activated):not(.acc-contrast-2-activated) .article-block p,body.proto-text2:not(.acc-contrast-1-activated):not(.acc-contrast-2-activated) .content-school p,body.proto-text2:not(.acc-contrast-1-activated):not(.acc-contrast-2-activated) .content-school li{color:#333!important}
+  body.proto-text2.acc-size-1-activated .entry p,body.proto-text2.acc-size-1-activated .entry li,body.proto-text2.acc-size-1-activated .content-school p,body.proto-text2.acc-size-1-activated .content-school li{font-size:18px!important}
+  body.proto-text2.acc-size-2-activated .entry p,body.proto-text2.acc-size-2-activated .entry li,body.proto-text2.acc-size-2-activated .content-school p,body.proto-text2.acc-size-2-activated .content-school li{font-size:20px!important}
+  @media (min-width:641px){body.proto-text2 .entry p,body.proto-text2 .entry li,body.proto-text2 .content-school p,body.proto-text2 .content-school li{font-size:17px!important}}
   /* Planšetė: ta pati skalė, vienu laipteliu didesnė */
   @media (min-width:641px) and (max-width:1024px){
     .content-main-title,.content-main-title h1,.content-main-title span{font-size:28px!important;font-weight:500!important;line-height:1.2!important}
@@ -1729,6 +1743,7 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
     if (deskWide()) { applyHero(doc); if (doc.defaultView.SkTableScroll) doc.defaultView.SkTableScroll.init(); return; }
     if ((doc.defaultView.innerWidth || 0) > 1024) doc.body.classList.add('proto-tab-wide');
     if (!doc.getElementById('proto-css')) { const s = doc.createElement('style'); s.id = 'proto-css'; s.textContent = PROTO_CSS; doc.head.appendChild(s); }
+    doc.body.classList.toggle('proto-text2', !!state.text2);
     rebuildFooter(doc);
     rebuildLessons(doc);
     compactLayouts(doc);
@@ -2208,7 +2223,8 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
       <button class="demo-toggle" data-alerttoggle="1">Ekstremalios situacijos juosta <i id="alertState">${state.alert ? 'įjungta' : 'išjungta'}</i></button>
       <button class="demo-toggle calm" data-installdemo="1">Rodyti diegimo pasiūlymą <i>›</i></button>
       <button class="demo-toggle calm" data-pushdemo="1">Atsiųsti pranešimą <i>›</i></button>
-      <button class="demo-toggle calm" data-offlinetoggle="1">Be ryšio <i id="offState">${state.offline ? 'įjungta' : 'išjungta'}</i></button></div>`;
+      <button class="demo-toggle calm" data-offlinetoggle="1">Be ryšio <i id="offState">${state.offline ? 'įjungta' : 'išjungta'}</i></button>
+      <button class="demo-toggle calm" data-text2toggle="1">Straipsnio tekstas <i>${state.text2 ? 'pagerintas' : 'dabartinis'}</i></button></div>`;
   }
   function sheetA11y() {
     const a = state.a11y;
@@ -2531,6 +2547,7 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
     if (c === 'alert') setAlert(!state.alert);
     if (c === 'info') setInfo(!state.info);
     if (c === 'footer') toggleFooter();
+    if (c === 'text2') setText2(!state.text2);
     if (c === 'keyreset') { AUTH.forget(); toast('Raktas pamirštas. „Įkelti naujieną“ vėl paprašys kvietimo.'); refreshSheet(); }
     if (c === 'keylock') { AUTH.lockNow(); toast('Sesija baigta – kitą kartą bus prašoma PIN ar atspaudo.'); }
   });
@@ -2572,6 +2589,7 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
     if (d.pushdemo) { closeSheet(); setTimeout(pushDemo, 400); return; }
     if (d.notifgo) { $('notif').classList.remove('on'); if (t.dataset.path) go(t.dataset.path); return; }
     if (d.offlinetoggle) { setOffline(!state.offline); return; }
+    if (d.text2toggle) { setText2(!state.text2); refreshSheet(); return; }
     if (d.missing) { toast('„' + d.missing + '“ puslapio Skeleton dar neturi – tikroje svetainėje jis atsidarytų čia.'); return; }
     if (d.toggle) { state.open[d.toggle] = !state.open[d.toggle]; refreshSheet(); return; }
     if (d.q) { $('q').value = d.q; runSearch(); return; }
