@@ -1113,6 +1113,10 @@ body { margin: 0; overflow: hidden; background: #fff; }
   .proto-stepper .step-categories-title.pst-err span{color:#c62828!important;font-weight:500}
   .pst-msg,.proto-stepper .form-row>span.pst-msg{display:block;color:#c62828!important;font-size:13px;font-weight:500;margin-top:4px}
   .proto-stepper .step-3>h3{display:none}
+  .pst-help ul,.pst-list ul{margin:4px 0 4px 18px!important;padding:0!important;list-style:disc}
+  .pst-help li,.pst-list li{margin:0 0 2px!important;padding:0!important;list-style:disc;line-height:1.4}
+  .pst-help li:before,.pst-list li:before{content:none!important}
+  .proto-stepper .form-row>.pst-help{margin-top:6px}
   .proto-stepper .area-admin{height:160px!important;min-height:0!important}
   .proto-stepper .step-agreement.pst-agree{position:static!important;float:none!important;text-align:left!important;display:flex!important;flex-wrap:wrap;align-items:center;gap:8px;width:100%;margin:14px 0 0!important;padding:0!important}
   .proto-stepper .step-agreement.pst-agree label{display:inline-block!important;position:relative;font-size:15px!important;color:#222!important;margin:0!important}
@@ -1651,9 +1655,18 @@ body { margin: 0; overflow: hidden; background: #fff; }
     if (!wraps.length || names.length < 4) return;
     doc.body.classList.add('proto-stepper');
     // Foundation perkelia title į atskirą tooltip elementą – tekstą imame iš ten
+    // Patarimų tekstai nekeičiami – tik išdėstomi: kelių reikalavimų sakinys rodomas punktais
+    const fmtTip = (t) => /^Pavadinimas turi būti nei per trumpas/.test(t)
+      ? 'Pavadinimas turi būti:<ul><li>nei per trumpas, nei per ilgas;</li><li>pakankamai informatyvus;</li><li>jokiu būdu ne didžiosiom raidėm.</li></ul>'
+      : esc(t);
+    const p3 = form.querySelector('.step-3 > p');
+    if (p3 && /Parašykite mokyklos internetinės svetainės administratoriui žinutę/.test(p3.textContent)) {
+      p3.classList.add('pst-list');
+      p3.innerHTML = 'Parašykite mokyklos internetinės svetainės administratoriui žinutę jei norite:<ul><li>kad jis į kažką atkreiptų dėmesį;</li><li>pridėti Youtube nuorodą;</li><li>nurodyti, kaip skubu publikuoti jūsų įkeltą straipsnį/informaciją;</li><li>palikti savo kontaktus, jei nesate mokyklos narys.</li></ul>Nepamirškite ir AČIŪ.';
+    }
     const tipText = (t) => { if (!t) return ''; if (t.title) return t.title; const id = t.getAttribute('aria-describedby'); const el = id && doc.getElementById(id); return el ? el.textContent.trim() : (t.getAttribute('data-title') || ''); };
     // Pagalba: ? ikonų tekstas – iškart po laukeliu (telefone hover nėra)
-    form.querySelectorAll('.form-row').forEach(r => { const tip = r.querySelector('.has-tip'); const sp = r.querySelector(':scope > span'); const tt = tipText(tip); if (tt) { if (sp) sp.textContent = tt; else { const h = doc.createElement('span'); h.textContent = tt; r.appendChild(h); } } });
+    form.querySelectorAll('.form-row').forEach(r => { const tt = tipText(r.querySelector('.has-tip')); if (tt) { const h = doc.createElement('div'); h.className = 'pst-help'; h.innerHTML = fmtTip(tt); r.appendChild(h); } });
     form.querySelectorAll('.step-label').forEach(l => { const tt = tipText(l.querySelector('.has-tip')); if (tt) { const h = doc.createElement('div'); h.className = 'pst-help'; h.textContent = tt; l.appendChild(h); } });
     form.querySelectorAll('input[type="text"]').forEach(i => { i.setAttribute('enterkeyhint', 'next'); i.setAttribute('autocapitalize', 'sentences'); });
     const top = doc.createElement('div'); top.className = 'pst';
