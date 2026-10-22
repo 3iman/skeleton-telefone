@@ -929,6 +929,51 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
     };
   })();
 
+  // ---------- Naujienų archyvas: tikri raseiniugimnazija.lt duomenys (archive.json, kraunamas pareikalavus) ----------
+  const ARCH = (function () {
+    const MON = ['sausis', 'vasaris', 'kovas', 'balandis', 'gegužė', 'birželis', 'liepa', 'rugpjūtis', 'rugsėjis', 'spalis', 'lapkritis', 'gruodis'];
+    const RG = 'https://raseiniugimnazija.lt';
+    const api = { data: null };
+    let pending = null;
+    api.load = () => pending || (pending = fetch('archive.json').then(r => { if (!r.ok) throw 0; return r.json(); }).then(j => { api.data = j.months; }).catch(e => { pending = null; throw e; }));
+    const link = (h) => (D.pages[h] ? h : RG + h);
+    const item = (it) => `<div class="small-12 columns nopad news-flat-item">
+      <div class="small-12 medium-5 large-4 columns nopad news-flat-img-block"><a aria-label="${esc(it.t)}" href="${esc(link(it.h))}" style="background:${it.img ? 'url(' + it.img + ') no-repeat center center' : '#e9ecef'}; background-size:cover"><span class="sr-only">${esc(it.t)}</span></a></div>
+      <div class="small-12 medium-7 large-8 columns nopad news-item-content">
+        <div class="small-12 columns nopad news-title"><a href="${esc(link(it.h))}">${esc(it.t)}</a></div>
+        <div class="small-12 columns nopad news-info"><ul><li>Paskelbta: ${esc(it.d)}</li>${it.c ? `<li>Kategorija: <a href="${esc(link(it.ch))}">${esc(it.c)}</a></li>` : ''}</ul></div>
+        <div class="small-12 columns nopad news-text">${esc(it.x)}</div></div></div>`;
+    api.make = (p) => {
+      if (!api.data) return false;
+      let m = p.match(/^\/naujienos\/archyvas\/(\d{4})(?:\/(\d{2}))?$/), items, title, crumbs;
+      if (m) {
+        const keys = Object.keys(api.data).filter(k => m[2] ? k === p : k.startsWith('/naujienos/archyvas/' + m[1] + '/')).sort().reverse();
+        items = keys.flatMap(k => api.data[k]);
+        title = 'Archyvas ' + m[1] + (m[2] ? ' ' + MON[+m[2] - 1] : '');
+        crumbs = (m[2] ? `<li class="breadcrumb-item"><a href="/naujienos/archyvas/${m[1]}">${m[1]}</a></li>` : '') + `<li class="breadcrumb-item"><a>${m[2] ? MON[+m[2] - 1] : m[1]}</a></li>`;
+      } else {
+        // Kategorija – visos jos naujienos iš archyvo, naujausios viršuje
+        items = Object.values(api.data).flat().filter(it => it.ch === p).sort((a, b) => (b.d || '').localeCompare(a.d || ''));
+        const c = (state.newsCats || []).find(x => x.h === p);
+        title = c ? c.t : (items[0] && items[0].c) || 'Naujienos';
+        crumbs = `<li class="breadcrumb-item"><a>${esc(title)}</a></li>`;
+      }
+      if (!items.length) return false;
+      const doc = new DOMParser().parseFromString('<div id="w">' + D.pages['/naujienos'].h + '</div>', 'text/html');
+      const blk = doc.querySelector('.news-flat-block'); if (!blk) return;
+      blk.querySelectorAll('.news-flat-item').forEach(x => x.remove());
+      const pg = doc.querySelector('.site-pagination'); if (pg) pg.remove();
+      blk.insertAdjacentHTML('afterbegin', items.map(item).join(''));
+      const t = doc.querySelector('.content-main-title');
+      if (t) [...t.childNodes].forEach(n => { if (n.nodeType === 3 && n.textContent.trim()) n.textContent = ' ' + title + ' '; });
+      const br = doc.querySelector('.breads ul');
+      if (br) br.innerHTML = '<li class="breadcrumb-item"><a href="/">Titulinis</a></li><li class="breadcrumb-item"><a href="/naujienos">Naujienos</a></li>' + crumbs;
+      D.pages[p] = { t: title, h: doc.getElementById('w').innerHTML };
+      return true;
+    };
+    return api;
+  })();
+
   // ---------- Skeleton ekranai: pagal puslapio tipą ----------
   function skelFor(p) {
     const L = (w, h) => `<i style="height:${h || 12}px;width:${w || 100}%"></i>`;
@@ -943,6 +988,15 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
   let skelT = 0, skelTimer = 0;
   function go(p, opts) {
     opts = opts || {};
+    const isCat = /^\/naujienos\/(?!archyvas$|kurti$|author$)[a-z0-9-]+$/.test(p);
+    if (isCat && !(state.catBuilt || {})[p]) {
+      if (!ARCH.data) { $('skel').innerHTML = skelFor('/naujienos'); app.classList.add('loading'); ARCH.load().then(() => { app.classList.remove('loading'); go(p, opts); }).catch(() => { app.classList.remove('loading'); go(p, Object.assign({}, opts)); }); state.catBuilt = state.catBuilt || {}; return; }
+      if (ARCH.make(p)) { state.catBuilt = state.catBuilt || {}; state.catBuilt[p] = 1; }
+    }
+    if (p.startsWith('/naujienos/archyvas') && !D.pages[p]) {
+      if (!ARCH.data) { $('skel').innerHTML = skelFor('/naujienos'); app.classList.add('loading'); ARCH.load().then(() => { app.classList.remove('loading'); go(p, opts); }).catch(() => { app.classList.remove('loading'); toast('Archyvo nepavyko įkelti'); }); return; }
+      ARCH.make(p);
+    }
     if (p === '/naujienos/kurti' && !AUTH.ok()) { closeSheet(true); AUTH.open(() => go(p, opts)); return; }
     if (!D.pages[p]) { toast('Šio puslapio prototipe nėra. Tikroje svetainėje jis atsidarytų.'); return; }
     closeSheet(true); closeViewer();
@@ -1376,7 +1430,8 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
   .acc-contrast-2-activated #proto-more .pm-btn,.acc-contrast-2-activated #proto-pager a{background:#373737;color:#fff!important;border-color:#fff}
   .acc-contrast-2-activated #proto-more .pm-count,.acc-contrast-2-activated #proto-pager .pp-mid{color:#fff}
   #proto-news-filter{display:flex;gap:8px;padding:8px 0 4px;clear:both}
-  #proto-news-filter select{flex:1;min-width:0;float:none!important;width:auto!important;margin:0!important;height:44px;font-size:15px}
+  #proto-news-filter select{display:none!important}
+  #proto-news-filter .pnf-arch.pnf-cat{flex:1 1 auto;max-width:none;min-width:0}
   #proto-news-filter .pnf-arch{flex:0 0 auto;max-width:48%;height:44px;display:inline-flex;align-items:center;gap:8px;padding:0 14px;border:1px solid #cacaca;background:#fff;color:#333;font:inherit;font-size:15px;cursor:pointer}
   #proto-news-filter .pnf-arch span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   #proto-news-filter .pnf-arch svg{color:#2e7d32;flex-shrink:0}
@@ -1734,7 +1789,17 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
         let curLbl = 'Archyvas';
         if (cur[1]) { const y = arch.find(x => x.y === cur[1]); const m = y && cur[2] ? y.m.find(x => x.h.replace(/\/$/, '').endsWith('/' + cur[2])) : null; curLbl = cur[1] + (m ? ' ' + m.t.toLowerCase() : ''); }
         const row = doc.createElement('div'); row.id = 'proto-news-filter'; row.className = 'small-12 columns nopad';
-        if (sel) row.appendChild(sel);
+        // Kategorija – toks pat mygtukas ir lapas kaip archyvas (vietoj naršyklės „select“)
+        if (sel) {
+          const opts = [...sel.options].map(o => { let h = '/naujienos'; try { h = new URL(o.value, O).pathname.replace(/^\/lt\//, '/').replace(/\/$/, '') || '/naujienos'; } catch (e) {} return { t: o.textContent.trim(), h }; });
+          const curO = opts.find(o => o.h === state.path) || (state.path.startsWith('/naujienos/archyvas') ? null : opts[0]);
+          state.newsCats = opts;
+          const cb = doc.createElement('button'); cb.type = 'button'; cb.className = 'pnf-arch pnf-cat' + (curO && curO !== opts[0] ? ' on' : '');
+          cb.setAttribute('aria-haspopup', 'dialog');
+          cb.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M6 12h12M10 18h4"/></svg><span>' + esc(curO ? curO.t : 'Visos naujienos') + '</span>';
+          cb.addEventListener('click', () => openSheet('newscats'));
+          row.appendChild(cb); sel.style.display = 'none';
+        }
         if (arch.length) {
           const btn = doc.createElement('button'); btn.type = 'button'; btn.className = 'pnf-arch' + (cur[1] ? ' on' : '');
           btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16v14H4zM4 10h16M8 3v4M16 3v4"/></svg><span>' + esc(curLbl) + '</span>';
@@ -2192,7 +2257,11 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
       </div>`).join('')}</div>
       ${cur.startsWith('/naujienos/archyvas') ? `<button class="big-btn ghost" data-href="/naujienos">Visos naujienos</button>` : ''}`;
   }
-  const SHEETS = { doccats: ['Dokumentų kategorijos', sheetDocCats], archive: ['Naujienų archyvas', sheetArchive], quick: ['Greičiau', sheetQuick], search: ['Paieška', sheetSearch], menu: ['Meniu', sheetMenu], a11y: ['Prieinamumas', sheetA11y], install: ['Įdiegti telefone', sheetInstall], push: ['Gauti pranešimus?', sheetPush] };
+  function sheetNewsCats() {
+    const C = state.newsCats || [];
+    return `<div class="dct">${C.map(c => `<button class="dct-i${c.h === state.path ? ' on' : ''}" data-href="${esc(c.h)}"${c.h === state.path ? ' aria-current="page"' : ''}>${esc(c.t)}</button>`).join('')}</div>`;
+  }
+  const SHEETS = { newscats: ['Naujienų kategorijos', sheetNewsCats], doccats: ['Dokumentų kategorijos', sheetDocCats], archive: ['Naujienų archyvas', sheetArchive], quick: ['Greičiau', sheetQuick], search: ['Paieška', sheetSearch], menu: ['Meniu', sheetMenu], a11y: ['Prieinamumas', sheetA11y], install: ['Įdiegti telefone', sheetInstall], push: ['Gauti pranešimus?', sheetPush] };
 
   // ---------- Dokumento peržiūra ----------
   function openViewer(title) {
