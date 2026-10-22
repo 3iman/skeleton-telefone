@@ -976,7 +976,8 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
   })();
 
   // Straipsnio teksto variantas: įsimenamas šiame įrenginyje
-  try { state.text2 = localStorage.getItem('sk-text2') !== '0'; } catch (e) { state.text2 = true; }
+  // Pagerintas straipsnio tekstas – standartas (jungiklis pašalintas)
+  state.text2 = true;
   function setText2(on) {
     state.text2 = on; try { localStorage.setItem('sk-text2', on ? '1' : '0'); } catch (e) {}
     try { frame.contentDocument.body.classList.toggle('proto-text2', on); } catch (e) {}
@@ -2233,8 +2234,7 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
       <button class="demo-toggle" data-alerttoggle="1">Ekstremalios situacijos juosta <i id="alertState">${state.alert ? 'įjungta' : 'išjungta'}</i></button>
       <button class="demo-toggle calm" data-installdemo="1">Rodyti diegimo pasiūlymą <i>›</i></button>
       <button class="demo-toggle calm" data-pushdemo="1">Atsiųsti pranešimą <i>›</i></button>
-      <button class="demo-toggle calm" data-offlinetoggle="1">Be ryšio <i id="offState">${state.offline ? 'įjungta' : 'išjungta'}</i></button>
-      <button class="demo-toggle calm" data-text2toggle="1">Straipsnio tekstas <i>${state.text2 ? 'pagerintas' : 'dabartinis'}</i></button></div>`;
+      <button class="demo-toggle calm" data-offlinetoggle="1">Be ryšio <i id="offState">${state.offline ? 'įjungta' : 'išjungta'}</i></button></div>`;
   }
   function sheetA11y() {
     const a = state.a11y;
