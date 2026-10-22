@@ -1448,8 +1448,8 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
   @media (max-width:640px){.content-main-title a[href$="rss.xml"]{display:none!important}}
   .proto-article .content-main{padding-top:6px!important}
   .proto-eyebrow{display:flex;align-items:center;gap:8px;font-size:14px;color:#6b6b6b;margin:6px 0 6px;flex-wrap:wrap}
-  .proto-eyebrow a{color:#2e7d32!important;font-weight:500;text-transform:uppercase;letter-spacing:.04em;font-size:13px}
-  .proto-article .article-block h1{font-size:26px!important;line-height:1.2!important;margin:0 0 14px!important;padding-right:0!important}
+  .proto-eyebrow a{color:#2e7d32!important;font-weight:400;font-size:14px}
+  .proto-article .article-block h1{font-size:24px!important;font-weight:500!important;line-height:1.25!important;margin:0 0 14px!important;padding-right:0!important;text-wrap:balance}
   .proto-article #page-font-size{display:none!important}
   .proto-article .article-block{padding-bottom:0!important;margin-bottom:0!important}
   @media (min-width:641px){.proto-article .article-block h1{font-size:32px!important}}
@@ -1733,7 +1733,7 @@ button.srow { cursor: pointer; } button.srow:active { background: #f5f6f7; }
         const cat = ul ? ul.querySelector('a') : null;
         if (h1 && (m || cat)) {
           const ey = doc.createElement('div'); ey.className = 'proto-eyebrow';
-          ey.innerHTML = (cat ? cat.outerHTML : '') + (cat && m ? '<span aria-hidden="true">·</span>' : '') + (m ? '<span>' + m[0] + '</span>' : '');
+          ey.innerHTML = (m ? '<span>' + m[0] + '</span>' : '') + (cat && m ? '<span aria-hidden="true">·</span>' : '') + (cat ? cat.outerHTML : '');
           h1.insertAdjacentElement('beforebegin', ey);
           ul.remove();
           doc.body.classList.add('proto-article');
